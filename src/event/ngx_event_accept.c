@@ -656,6 +656,81 @@ ngx_event_recvmsg(ngx_event_t *ev)
 
 
 ngx_int_t
+ngx_event_udp_accept(ngx_connection_t *c)
+{
+    int          on, rc;
+    ngx_socket_t fd;
+
+    fd = ngx_socket(c->listening->sockaddr->sa_family, SOCK_DGRAM, 0);
+    if (fd == (ngx_socket_t) -1) {
+        ngx_log_error(NGX_LOG_ALERT, c->log, ngx_socket_errno,
+                      ngx_socket_n " failed");
+        return NGX_ERROR;
+    }
+
+    if (ngx_nonblocking(fd) == -1) {
+        ngx_log_error(NGX_LOG_ALERT, c->log, ngx_socket_errno,
+                      ngx_nonblocking_n " failed");
+        goto failed;
+    }
+
+    on = 1;
+    rc = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(int));
+    if (rc == -1) {
+        ngx_log_error(NGX_LOG_ALERT, c->log, ngx_socket_errno,
+                      "setsockopt(SO_REUSEADDR, 1) failed");
+        goto failed;
+    }
+
+#if (NGX_HAVE_REUSEPORT && NGX_FREEBSD)
+    on = 1;
+    rc = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, (char *) &on, sizeof(int));
+    if (rc == -1) {
+        ngx_log_error(NGX_LOG_ALERT, c->log, ngx_socket_errno,
+                      "setsockopt(SO_REUSEPORT, 1) failed");
+        goto failed;
+    }
+#endif
+
+    rc = bind(fd, c->listening->sockaddr, c->listening->socklen);
+    if (-1 == rc) {
+        ngx_log_error(NGX_LOG_EMERG, c->log, ngx_socket_errno,
+                      "bind() to %V failed", &c->listening->addr_text);
+        goto failed;
+    }
+
+    if (connect(fd, c->sockaddr, c->socklen) == -1) {
+        ngx_log_error(NGX_LOG_ALERT, c->log, ngx_socket_errno,
+                      "connect() failed");
+        goto failed;
+    }
+
+    c->fd = fd;
+    c->shared = 0;
+    c->recv = ngx_udp_recv;
+
+    if (ngx_add_conn && (ngx_event_flags & NGX_USE_EPOLL_EVENT) == 0) {
+        if (ngx_add_conn(c) == NGX_ERROR) {
+             goto failed;
+         }
+     }
+
+    return NGX_OK;
+
+failed:
+
+    if (ngx_close_socket(fd) == -1) {
+        ngx_log_error(NGX_LOG_EMERG, c->log, ngx_socket_errno,
+                      ngx_close_socket_n " failed");
+    }
+
+    c->fd = (ngx_socket_t) -1;
+
+    return NGX_ERROR;
+}
+
+
+ngx_int_t
 ngx_trylock_accept_mutex(ngx_cycle_t *cycle)
 {
     if (ngx_shmtx_trylock(&ngx_accept_mutex)) {

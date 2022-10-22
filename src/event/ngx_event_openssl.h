@@ -54,6 +54,9 @@
 
 #endif
 
+#if !defined(OPENSSL_NO_DTLS) && OPENSSL_VERSION_NUMBER >= 0x009080dfL
+#define NGX_HAVE_DTLS
+#endif
 
 #define ngx_ssl_session_t       SSL_SESSION
 #define ngx_ssl_conn_t          SSL
@@ -90,6 +93,9 @@ struct ngx_ssl_connection_s {
     unsigned                    no_wait_shutdown:1;
     unsigned                    no_send_shutdown:1;
     unsigned                    handshake_buffer_set:1;
+    unsigned                    dtls_cookie_accepted:1;
+    unsigned                    bio_is_mem:1;
+    unsigned                    client:1;
 };
 
 
@@ -142,6 +148,8 @@ typedef struct {
 #define NGX_SSL_TLSv1_1  0x0010
 #define NGX_SSL_TLSv1_2  0x0020
 #define NGX_SSL_TLSv1_3  0x0040
+#define NGX_SSL_DTLSv1   0x0080
+#define NGX_SSL_DTLSv1_2 0x0200
 
 
 #define NGX_SSL_BUFFER   1

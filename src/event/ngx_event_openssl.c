@@ -69,6 +69,22 @@ static void *ngx_openssl_create_conf(ngx_cycle_t *cycle);
 static char *ngx_openssl_engine(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static void ngx_openssl_exit(ngx_cycle_t *cycle);
 
+#if defined(NGX_HAVE_DTLS)
+static int ngx_dtls_client_hmac(SSL *ssl, u_char res[EVP_MAX_MD_SIZE],
+    unsigned int *rlen);
+static int ngx_dtls_generate_cookie_cb(SSL *ssl, unsigned char *cookie,
+    unsigned int *cookie_len);
+static int ngx_dtls_verify_cookie_cb(SSL *ssl,
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    const
+#endif
+unsigned char *cookie, unsigned int cookie_len);
+static ngx_int_t ngx_dtls_handshake(ngx_connection_t *c);
+
+
+#define COOKIE_SECRET_LENGTH 32
+static u_char ngx_dtls_cookie_secret[COOKIE_SECRET_LENGTH];
+#endif
 
 static ngx_command_t  ngx_openssl_commands[] = {
 
@@ -232,12 +248,70 @@ ngx_ssl_init(ngx_log_t *log)
 ngx_int_t
 ngx_ssl_create(ngx_ssl_t *ssl, ngx_uint_t protocols, void *data)
 {
-    ssl->ctx = SSL_CTX_new(SSLv23_method());
+    if (protocols & NGX_SSL_DTLSv1 || protocols & NGX_SSL_DTLSv1_2) {
+
+#if defined(NGX_HAVE_DTLS)
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+
+        if (protocols & NGX_SSL_DTLSv1_2) {
+
+            /* DTLS 1.2 is only supported since 1.0.2 */
+
+            /* DTLSv1_x_method()  functions are deprecated in 1.1.0 */
+
+#if OPENSSL_VERSION_NUMBER < 0x10002000L
+
+            /* ancient ... 1.0.2 */
+            ngx_log_error(NGX_LOG_EMERG, ssl->log, 0,
+                          "DTLSv1.2 is not supported by "
+                          "the used version of OpenSSL");
+            return NGX_ERROR;
+
+#else
+            /* 1.0.2 ... 1.1 */
+            ssl->ctx = SSL_CTX_new(DTLSv1_2_method());
+#endif
+        }
+
+        /* note: either 1.2 or 1.1 methods may be initialized, not both,
+         * preferred is 1.2 if both specified in ssl_protocols
+         */
+
+        if (protocols & NGX_SSL_DTLSv1 && ssl->ctx == NULL) {
+            ssl->ctx = SSL_CTX_new(DTLSv1_method());
+        }
+#else
+        ssl->ctx = SSL_CTX_new(DTLS_method());
+#endif
+
+#else
+        ngx_log_error(NGX_LOG_EMERG, ssl->log, 0,
+                      "OpenSSL is built without DTLS support");
+        return NGX_ERROR;
+#endif
+
+    } else {
+        ssl->ctx = SSL_CTX_new(SSLv23_method());
+    }
 
     if (ssl->ctx == NULL) {
         ngx_ssl_error(NGX_LOG_EMERG, ssl->log, 0, "SSL_CTX_new() failed");
         return NGX_ERROR;
     }
+
+#if defined(NGX_HAVE_DTLS)
+    if (protocols & NGX_SSL_DTLSv1 || protocols & NGX_SSL_DTLSv1_2) {
+
+        SSL_CTX_set_cookie_generate_cb(ssl->ctx, ngx_dtls_generate_cookie_cb);
+        SSL_CTX_set_cookie_verify_cb(ssl->ctx, ngx_dtls_verify_cookie_cb);
+
+        /* TODO: probably this should be rotated regularly */
+        if (!RAND_bytes(ngx_dtls_cookie_secret, COOKIE_SECRET_LENGTH)) {
+            return NGX_ERROR;
+        }
+    }
+#endif
 
     if (SSL_CTX_set_ex_data(ssl->ctx, ngx_ssl_server_conf_index, data) == 0) {
         ngx_ssl_error(NGX_LOG_EMERG, ssl->log, 0,
@@ -1201,6 +1275,7 @@ ngx_ssl_create_connection(ngx_ssl_t *ssl, ngx_connection_t *c, ngx_uint_t flags)
 
     if (flags & NGX_SSL_CLIENT) {
         SSL_set_connect_state(sc->connection);
+        sc->client = 1;
 
     } else {
         SSL_set_accept_state(sc->connection);
@@ -1236,6 +1311,19 @@ ngx_ssl_handshake(ngx_connection_t *c)
 {
     int        n, sslerr;
     ngx_err_t  err;
+
+#if defined(NGX_HAVE_DTLS)
+    ngx_int_t  rc;
+
+    if (c->type == SOCK_DGRAM && !c->ssl->client
+        && !c->ssl->dtls_cookie_accepted)
+    {
+        rc = ngx_dtls_handshake(c);
+        if (rc != NGX_OK) {
+            return rc;
+        }
+    }
+#endif
 
     ngx_ssl_clear_error(c->log);
 
@@ -1338,6 +1426,17 @@ ngx_ssl_handshake(ngx_connection_t *c)
             return NGX_ERROR;
         }
 
+        if (c->ssl->bio_is_mem) {
+            SSL_set_rfd(c->ssl->connection, c->fd);
+            c->ssl->bio_is_mem = 0;
+
+            /* buffer is consumed by openssl, we don't want to proxy it */
+            c->buffer->pos = c->buffer->last;
+
+            /* continue with handshake with socket */
+            return ngx_ssl_handshake(c);
+        }
+
         return NGX_AGAIN;
     }
 
@@ -1400,6 +1499,215 @@ ngx_ssl_handshake_handler(ngx_event_t *ev)
     c->ssl->handler(c);
 }
 
+
+#if defined(NGX_HAVE_DTLS)
+
+/*
+ * RFC 6347, 4.2.1:
+ *
+ * When responding to a HelloVerifyRequest, the client MUST use the same
+ * parameter values (version, random, session_id, cipher_suites,
+ * compression_method) as it did in the original ClientHello.  The
+ * server SHOULD use those values to generate its cookie and verify that
+ * they are correct upon cookie receipt.
+ */
+
+static int
+ngx_dtls_client_hmac(SSL *ssl, u_char res[EVP_MAX_MD_SIZE], unsigned int *rlen)
+{
+    u_char            *p;
+    size_t             len;
+    ngx_connection_t  *c;
+
+    u_char             buffer[64];
+
+    c = ngx_ssl_get_connection(ssl);
+
+    p = buffer;
+
+    p = ngx_cpymem(p, c->addr_text.data, c->addr_text.len);
+    p = ngx_sprintf(p, "%d", ngx_inet_get_port(c->sockaddr));
+
+    len = p - buffer;
+
+    HMAC(EVP_sha1(), (const void*) ngx_dtls_cookie_secret,
+         COOKIE_SECRET_LENGTH, (const u_char*) buffer, len, res, rlen);
+
+    return NGX_OK;
+}
+
+
+static int
+ngx_dtls_generate_cookie_cb(SSL *ssl, unsigned char *cookie,
+    unsigned int *cookie_len)
+{
+    unsigned int  rlen;
+    u_char        res[EVP_MAX_MD_SIZE];
+
+    if (ngx_dtls_client_hmac(ssl, res, &rlen) != NGX_OK) {
+        return 0;
+    }
+
+    ngx_memcpy(cookie, res, rlen);
+    *cookie_len = rlen;
+
+    return 1;
+}
+
+
+static int
+ngx_dtls_verify_cookie_cb(SSL *ssl,
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    const
+#endif
+    unsigned char *cookie, unsigned int cookie_len)
+{
+    unsigned int  rlen;
+    u_char        res[EVP_MAX_MD_SIZE];
+
+    if (ngx_dtls_client_hmac(ssl, res, &rlen) != NGX_OK) {
+        return 0;
+    }
+
+    if (cookie_len == rlen && ngx_memcmp(res, cookie, rlen) == 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+
+static ngx_int_t
+ngx_dtls_handshake(ngx_connection_t *c)
+{
+    int               n, rd;
+    BIO              *rbio, *wbio;
+    ngx_int_t         rc;
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    BIO_ADDR         *peer;
+#else
+    SSL              *ssl;
+    struct sockaddr  *peer;
+#endif
+
+    wbio = BIO_new(BIO_s_mem());
+    if (wbio == NULL) {
+        ngx_log_error(NGX_LOG_EMERG, c->log, 0, "BIO_new");
+        return NGX_ERROR;
+    }
+
+    rbio = BIO_new_mem_buf(c->buffer->pos, c->buffer->last - c->buffer->pos);
+    if (rbio == NULL) {
+        ngx_log_error(NGX_LOG_EMERG, c->log, 0, "BIO_new_mem_buf");
+        return NGX_ERROR;
+    }
+
+    BIO_set_mem_eof_return(rbio, -1);
+
+    SSL_set_bio(c->ssl->connection, rbio, wbio);
+
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+
+    peer = BIO_ADDR_new();
+
+    if (peer == NULL) {
+        ngx_log_error(NGX_LOG_EMERG, c->log, 0, "BIO_ADDR_new");
+        return NGX_ERROR;
+    }
+
+#else
+
+    peer = ngx_palloc(c->pool, c->socklen);
+    if (peer == NULL) {
+        return NGX_ERROR;
+    }
+
+    ssl = c->ssl->connection;
+    SSL_set_options(ssl, SSL_OP_COOKIE_EXCHANGE);
+
+#endif
+
+    rc = DTLSv1_listen(c->ssl->connection, peer);
+
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    BIO_ADDR_free(peer);
+#endif
+
+    if (rc < 0) {
+        ngx_ssl_error(NGX_LOG_EMERG, c->log, 0,
+                      "DTLSv1_listen error %d", rc);
+
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+        return NGX_ERROR;
+#else
+        /* no way to distinguish SSL error from NBIO */
+        if (ERR_peek_last_error() != 0) {
+            return NGX_ERROR;
+        }
+
+        /* assume -1 comes from NBIO and act accordingly */
+        rc = 0;
+#endif
+    }
+
+    ngx_log_debug1(NGX_LOG_DEBUG_EVENT, c->log, 0, "DTLSv1_listen: %i", rc);
+
+    if (rc == 0) {
+        /* non-blocking IO: need to send hello-verify request */
+        n = BIO_ctrl_pending(wbio);
+        if (n > 0) {
+            /* openssl provided some data to send */
+            rd = BIO_read(wbio, c->buffer->start, n);
+            if (rd != n) {
+                ngx_log_error(NGX_LOG_EMERG, c->log, 0, "DTLS BIO_read failed");
+                return NGX_ERROR;
+            }
+
+            rc = ngx_udp_send(c, c->buffer->start, n);
+            if (rc != n) {
+                return NGX_ERROR;
+            }
+
+            /* ok, we sent response, session is over,
+             * waiting for helllo with cookie
+             */
+
+        } else {
+            /* renegotiation or other unexpected result */
+            return NGX_ERROR;
+        }
+
+        /* this session is no longer required, new will be created */
+
+        return NGX_ABORT; /* drop this session*/
+    }
+
+    /* rc >= 1: client with a valid cookie */
+
+    /* DTLSv1_listen PEEK'ed the data, SSL_accept() needs to read from start */
+    if (BIO_reset(rbio) != 1) {
+        ngx_log_error(NGX_LOG_ALERT, c->log, 0, "BIO_reset");
+        return NGX_ERROR;
+    }
+
+    if (c->shared) {
+        if (ngx_event_udp_accept(c) != NGX_OK) {
+            return NGX_ERROR;
+        }
+    }
+
+    /* to be reset by handshake when mem buf content is consumed */
+    c->ssl->bio_is_mem = 1;
+
+    /* write BIO is real socket, to start sending server hello */
+    SSL_set_wfd(c->ssl->connection, c->fd);
+
+    c->ssl->dtls_cookie_accepted = 1;
+
+    return NGX_OK;
+}
+
+#endif
 
 ssize_t
 ngx_ssl_recv_chain(ngx_connection_t *c, ngx_chain_t *cl, off_t limit)

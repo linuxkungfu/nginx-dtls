@@ -849,12 +849,6 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             return "\"backlog\" parameter is incompatible with \"udp\"";
         }
 
-#if (NGX_STREAM_SSL)
-        if (ls->ssl) {
-            return "\"ssl\" parameter is incompatible with \"udp\"";
-        }
-#endif
-
         if (ls->so_keepalive) {
             return "\"so_keepalive\" parameter is incompatible with \"udp\"";
         }

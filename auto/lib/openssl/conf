@@ -139,4 +139,16 @@ END
         exit 1
     fi
 
+    ngx_feature="OpenSSL DTLS support"
+    ngx_feature_name="NGX_OPENSSL_DTLS"
+    ngx_feature_run=no
+    ngx_feature_incs="#include <openssl/ssl.h>"
+    ngx_feature_path=
+    ngx_feature_libs="-lssl -lcrypto $NGX_LIBDL"
+    ngx_feature_test="DTLSv1_listen(NULL, NULL)"
+    . auto/feature
+
+    if [ $ngx_found = yes ]; then
+        have=NGX_SSL_DTLS . auto/have
+    fi
 fi

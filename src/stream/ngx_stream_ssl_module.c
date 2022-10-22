@@ -34,6 +34,8 @@ static char *ngx_stream_ssl_merge_conf(ngx_conf_t *cf, void *parent,
 
 static char *ngx_stream_ssl_password_file(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
+static char *ngx_stream_set_ssl_protocols(ngx_conf_t *cf, ngx_command_t *cmd,
+    void *conf);
 static char *ngx_stream_ssl_session_cache(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
 static ngx_int_t ngx_stream_ssl_init(ngx_conf_t *cf);
@@ -46,6 +48,9 @@ static ngx_conf_bitmask_t  ngx_stream_ssl_protocols[] = {
     { ngx_string("TLSv1.1"), NGX_SSL_TLSv1_1 },
     { ngx_string("TLSv1.2"), NGX_SSL_TLSv1_2 },
     { ngx_string("TLSv1.3"), NGX_SSL_TLSv1_3 },
+    { ngx_string("DTLSv1"), NGX_SSL_DTLSv1 },
+    { ngx_string("DTLSv1.2"), NGX_SSL_DTLSv1_2 },
+
     { ngx_null_string, 0 }
 };
 
@@ -105,7 +110,7 @@ static ngx_command_t  ngx_stream_ssl_commands[] = {
 
     { ngx_string("ssl_protocols"),
       NGX_STREAM_MAIN_CONF|NGX_STREAM_SRV_CONF|NGX_CONF_1MORE,
-      ngx_conf_set_bitmask_slot,
+      ngx_stream_set_ssl_protocols,
       NGX_STREAM_SRV_CONF_OFFSET,
       offsetof(ngx_stream_ssl_conf_t, protocols),
       &ngx_stream_ssl_protocols },
@@ -365,7 +370,8 @@ ngx_stream_ssl_init_connection(ngx_ssl_t *ssl, ngx_connection_t *c)
 
     cscf = ngx_stream_get_module_srv_conf(s, ngx_stream_core_module);
 
-    if (cscf->tcp_nodelay && ngx_tcp_nodelay(c) != NGX_OK) {
+    if (c->type == SOCK_STREAM
+        && cscf->tcp_nodelay && ngx_tcp_nodelay(c) != NGX_OK) {
         return NGX_ERROR;
     }
 
@@ -387,6 +393,11 @@ ngx_stream_ssl_init_connection(ngx_ssl_t *ssl, ngx_connection_t *c)
         c->ssl->handler = ngx_stream_ssl_handshake_handler;
 
         return NGX_AGAIN;
+    }
+
+    if (rc == NGX_ABORT) {
+        /* DTLS handshake sent the cookie to client */
+        return NGX_ERROR;
     }
 
     /* rc == NGX_OK */
@@ -721,6 +732,33 @@ ngx_stream_ssl_password_file(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 
 static char *
+ngx_stream_set_ssl_protocols(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+{
+    ngx_stream_ssl_conf_t  *scf = conf;
+
+    char  *rv;
+
+    rv = ngx_conf_set_bitmask_slot(cf, cmd, conf);
+
+    if (rv != NGX_CONF_OK) {
+        return rv;
+    }
+
+    /* DTLS protocol requires corresponding TLS version to be set */
+
+    if (scf->protocols & NGX_SSL_DTLSv1) {
+        scf->protocols |= NGX_SSL_TLSv1;
+    }
+
+    if (scf->protocols & NGX_SSL_DTLSv1_2) {
+        scf->protocols |= NGX_SSL_TLSv1_2;
+    }
+
+    return NGX_CONF_OK;
+}
+
+
+static char *
 ngx_stream_ssl_session_cache(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_stream_ssl_conf_t  *scf = conf;
@@ -835,8 +873,13 @@ invalid:
 static ngx_int_t
 ngx_stream_ssl_init(ngx_conf_t *cf)
 {
-    ngx_stream_handler_pt        *h;
-    ngx_stream_core_main_conf_t  *cmcf;
+    ngx_uint_t                     i;
+    ngx_stream_listen_t           *ls;
+    ngx_stream_handler_pt         *h;
+    ngx_stream_conf_ctx_t        *sctx;
+    ngx_stream_ssl_conf_t        **sscfp, *sscf;
+    ngx_stream_core_srv_conf_t   **cscfp, *cscf;
+    ngx_stream_core_main_conf_t   *cmcf;
 
     cmcf = ngx_stream_conf_get_module_main_conf(cf, ngx_stream_core_module);
 
@@ -846,6 +889,53 @@ ngx_stream_ssl_init(ngx_conf_t *cf)
     }
 
     *h = ngx_stream_ssl_handler;
+
+    cmcf = ngx_stream_conf_get_module_main_conf(cf, ngx_stream_core_module);
+
+    ls = cmcf->listen.elts;
+
+    for (i = 0; i < cmcf->listen.nelts; i++) {
+        if (ls[i].ssl) {
+            sctx = ls[i].ctx;
+
+            sscfp = (ngx_stream_ssl_conf_t **)sctx->srv_conf;
+            cscfp = (ngx_stream_core_srv_conf_t **)sctx->srv_conf;
+
+            sscf = sscfp[ngx_stream_ssl_module.ctx_index];
+            cscf = cscfp[ngx_stream_core_module.ctx_index];
+
+            if (sscf->certificates == NULL) {
+                ngx_log_error(NGX_LOG_EMERG, cf->log, 0,
+                              "no \"ssl_certificate\" is defined "
+                              "in server listening on SSL port at %s:%ui",
+                              cscf->file_name, cscf->line);
+                return NGX_ERROR;
+            }
+
+            if (ls[i].type == SOCK_DGRAM) {
+                if (!(sscf->protocols & NGX_SSL_DTLSv1
+                      || sscf->protocols & NGX_SSL_DTLSv1_2))
+                {
+                    ngx_log_error(NGX_LOG_EMERG, cf->log, 0,
+                                  "\"ssl_protocols\" does not enable DTLS in a "
+                                  "server listening on UDP SSL port at %s:%ui",
+                                   cscf->file_name, cscf->line);
+                    return NGX_ERROR;
+                }
+
+            } else {
+                if (sscf->protocols & NGX_SSL_DTLSv1
+                    || sscf->protocols & NGX_SSL_DTLSv1_2 )
+                {
+                    ngx_log_error(NGX_LOG_EMERG, cf->log, 0,
+                                  "\"ssl_protocols\" includes DTLS in a server "
+                                  "listening on SSL port at %s:%ui",
+                                  cscf->file_name, cscf->line);
+                    return NGX_ERROR;
+                }
+            }
+        }
+    }
 
     return NGX_OK;
 }
