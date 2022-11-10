@@ -20,7 +20,7 @@ static ngx_int_t ngx_event_connect_set_transparent(ngx_peer_connection_t *pc,
 ngx_int_t
 ngx_event_connect_peer(ngx_peer_connection_t *pc)
 {
-    int                rc, type;
+    int                rc, type, value;
 #if (NGX_HAVE_IP_BIND_ADDRESS_NO_PORT || NGX_LINUX)
     in_port_t          port;
 #endif
@@ -55,7 +55,7 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
     if (c == NULL) {
         if (ngx_close_socket(s) == -1) {
             ngx_log_error(NGX_LOG_ALERT, pc->log, ngx_socket_errno,
-                          ngx_close_socket_n "failed");
+                          ngx_close_socket_n " failed");
         }
 
         return NGX_ERROR;
@@ -70,6 +70,18 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
             ngx_log_error(NGX_LOG_ALERT, pc->log, ngx_socket_errno,
                           "setsockopt(SO_RCVBUF) failed");
             goto failed;
+        }
+    }
+
+    if (pc->so_keepalive) {
+        value = 1;
+
+        if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE,
+                       (const void *) &value, sizeof(int))
+            == -1)
+        {
+            ngx_log_error(NGX_LOG_ALERT, pc->log, ngx_socket_errno,
+                          "setsockopt(SO_KEEPALIVE) failed, ignored");
         }
     }
 
@@ -181,14 +193,16 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
 
     c->number = ngx_atomic_fetch_add(ngx_connection_counter, 1);
 
+    c->start_time = ngx_current_msec;
+
     if (ngx_add_conn) {
         if (ngx_add_conn(c) == NGX_ERROR) {
             goto failed;
         }
     }
 
-    ngx_log_debug3(NGX_LOG_DEBUG_EVENT, pc->log, 0,
-                   "connect to %V, fd:%d #%uA", pc->name, s, c->number);
+    ngx_log_debug4(NGX_LOG_DEBUG_EVENT, pc->log, 0,
+                   "connect to %V, fd:%d #%uA connection:%p", pc->name, s, c->number, c);
 
     rc = connect(s, pc->sockaddr, pc->socklen);
 

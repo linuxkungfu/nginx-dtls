@@ -15,6 +15,7 @@ types {
     text/vnd.wap.wml                                 wml;
     text/x-component                                 htc;
 
+    image/avif                                       avif;
     image/png                                        png;
     image/svg+xml                                    svg svgz;
     image/tiff                                       tif tiff;
@@ -24,7 +25,9 @@ types {
     image/x-jng                                      jng;
     image/x-ms-bmp                                   bmp;
 
-    application/font-woff                            woff;
+    font/woff                                        woff;
+    font/woff2                                       woff2;
+
     application/java-archive                         jar war ear;
     application/json                                 json;
     application/mac-binhex40                         hqx;
@@ -49,6 +52,7 @@ types {
     application/vnd.openxmlformats-officedocument.wordprocessingml.document
                                                      docx;
     application/vnd.wap.wmlc                         wmlc;
+    application/wasm                                 wasm;
     application/x-7z-compressed                      7z;
     application/x-cocoa                              cco;
     application/x-java-archive-diff                  jardiff;

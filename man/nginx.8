@@ -1,5 +1,5 @@
 .\"
-.\" Copyright (C) 2010 Sergey A. Osokin
+.\" Copyright (C) 2010, 2019 Sergey A. Osokin
 .\" Copyright (C) Nginx, Inc.
 .\" All rights reserved.
 .\"
@@ -25,7 +25,7 @@
 .\" SUCH DAMAGE.
 .\"
 .\"
-.Dd June 16, 2015
+.Dd November 5, 2020
 .Dt NGINX 8
 .Os
 .Sh NAME
@@ -35,6 +35,7 @@
 .Nm
 .Op Fl ?hqTtVv
 .Op Fl c Ar file
+.Op Fl e Ar file
 .Op Fl g Ar directives
 .Op Fl p Ar prefix
 .Op Fl s Ar signal
@@ -42,7 +43,8 @@
 .Nm
 (pronounced
 .Dq engine x )
-is an HTTP and reverse proxy server, as well as a mail proxy server.
+is an HTTP and reverse proxy server, a mail proxy server, and a generic
+TCP/UDP proxy server.
 It is known for its high performance, stability, rich feature set, simple
 configuration, and low resource consumption.
 .Pp
@@ -53,6 +55,12 @@ Print help.
 .It Fl c Ar file
 Use an alternative configuration
 .Ar file .
+.It Fl e Ar file
+Use an alternative error log
+.Ar file .
+Special value
+.Cm stderr
+indicates that the standard error output should be used.
 .It Fl g Ar directives
 Set global configuration directives.
 See
@@ -82,15 +90,15 @@ The following table shows the corresponding system signals:
 .It Cm reload
 .Dv SIGHUP
 .El
+.It Fl T
+Same as
+.Fl t ,
+but additionally dump configuration files to standard output.
 .It Fl t
 Do not run, just test the configuration file.
 .Nm
 checks the configuration file syntax and then tries to open files
 referenced in the configuration file.
-.It Fl T
-Same as
-.Fl t ,
-but additionally dump configuration files to standard output.
 .It Fl V
 Print the
 .Nm
@@ -197,10 +205,10 @@ Development of
 started in 2002, with the first public release on October 4, 2004.
 .Sh AUTHORS
 .An -nosplit
-.An Igor Sysoev Aq igor@sysoev.ru .
+.An Igor Sysoev Aq Mt igor@sysoev.ru .
 .Pp
 This manual page was originally written by
-.An Sergey A. Osokin Aq osa@FreeBSD.org.ru
+.An Sergey A. Osokin Aq Mt osa@FreeBSD.org.ru
 as a result of compiling many
 .Nm
 documents from all over the world.

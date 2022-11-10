@@ -128,7 +128,12 @@ typedef struct {
 
     off_t                              received;
     time_t                             start_sec;
+    ngx_uint_t                         requests;
     ngx_uint_t                         responses;
+    ngx_msec_t                         start_time;
+
+    size_t                             upload_rate;
+    size_t                             download_rate;
 
     ngx_str_t                          ssl_name;
 
@@ -137,6 +142,7 @@ typedef struct {
     ngx_stream_upstream_state_t       *state;
     unsigned                           connected:1;
     unsigned                           proxy_protocol:1;
+    unsigned                           half_closed:1;
 } ngx_stream_upstream_t;
 
 

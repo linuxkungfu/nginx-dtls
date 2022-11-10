@@ -22,8 +22,6 @@ static void ngx_http_variable_request_set(ngx_http_request_t *r,
 #endif
 static ngx_int_t ngx_http_variable_request_get_size(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
-static void ngx_http_variable_request_set_size(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_http_variable_header(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
 
@@ -124,10 +122,14 @@ static ngx_int_t ngx_http_variable_sent_keep_alive(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_http_variable_sent_transfer_encoding(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
+static void ngx_http_variable_set_limit_rate(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
 
 static ngx_int_t ngx_http_variable_connection(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
 static ngx_int_t ngx_http_variable_connection_requests(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
+static ngx_int_t ngx_http_variable_connection_time(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data);
 
 static ngx_int_t ngx_http_variable_nginx_version(ngx_http_request_t *r,
@@ -199,10 +201,20 @@ static ngx_http_variable_t  ngx_http_core_variables[] = {
     { ngx_string("remote_port"), NULL, ngx_http_variable_remote_port, 0, 0, 0 },
 
     { ngx_string("proxy_protocol_addr"), NULL,
-      ngx_http_variable_proxy_protocol_addr, 0, 0, 0 },
+      ngx_http_variable_proxy_protocol_addr,
+      offsetof(ngx_proxy_protocol_t, src_addr), 0, 0 },
 
     { ngx_string("proxy_protocol_port"), NULL,
-      ngx_http_variable_proxy_protocol_port, 0, 0, 0 },
+      ngx_http_variable_proxy_protocol_port,
+      offsetof(ngx_proxy_protocol_t, src_port), 0, 0 },
+
+    { ngx_string("proxy_protocol_server_addr"), NULL,
+      ngx_http_variable_proxy_protocol_addr,
+      offsetof(ngx_proxy_protocol_t, dst_addr), 0, 0 },
+
+    { ngx_string("proxy_protocol_server_port"), NULL,
+      ngx_http_variable_proxy_protocol_port,
+      offsetof(ngx_proxy_protocol_t, dst_port), 0, 0 },
 
     { ngx_string("server_addr"), NULL, ngx_http_variable_server_addr, 0, 0, 0 },
 
@@ -321,7 +333,7 @@ static ngx_http_variable_t  ngx_http_core_variables[] = {
     { ngx_string("sent_http_link"), NULL, ngx_http_variable_headers,
       offsetof(ngx_http_request_t, headers_out.link), 0, 0 },
 
-    { ngx_string("limit_rate"), ngx_http_variable_request_set_size,
+    { ngx_string("limit_rate"), ngx_http_variable_set_limit_rate,
       ngx_http_variable_request_get_size,
       offsetof(ngx_http_request_t, limit_rate),
       NGX_HTTP_VAR_CHANGEABLE|NGX_HTTP_VAR_NOCACHEABLE, 0 },
@@ -331,6 +343,9 @@ static ngx_http_variable_t  ngx_http_core_variables[] = {
 
     { ngx_string("connection_requests"), NULL,
       ngx_http_variable_connection_requests, 0, 0, 0 },
+
+    { ngx_string("connection_time"), NULL, ngx_http_variable_connection_time,
+      0, NGX_HTTP_VAR_NOCACHEABLE, 0 },
 
     { ngx_string("nginx_version"), NULL, ngx_http_variable_nginx_version,
       0, 0, 0 },
@@ -788,32 +803,6 @@ ngx_http_variable_request_get_size(ngx_http_request_t *r,
 }
 
 
-static void
-ngx_http_variable_request_set_size(ngx_http_request_t *r,
-    ngx_http_variable_value_t *v, uintptr_t data)
-{
-    ssize_t    s, *sp;
-    ngx_str_t  val;
-
-    val.len = v->len;
-    val.data = v->data;
-
-    s = ngx_parse_size(&val);
-
-    if (s == NGX_ERROR) {
-        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                      "invalid size \"%V\"", &val);
-        return;
-    }
-
-    sp = (ssize_t *) ((char *) r + data);
-
-    *sp = s;
-
-    return;
-}
-
-
 static ngx_int_t
 ngx_http_variable_header(ngx_http_request_t *r, ngx_http_variable_value_t *v,
     uintptr_t data)
@@ -1091,7 +1080,7 @@ ngx_http_variable_argument(ngx_http_request_t *r, ngx_http_variable_value_t *v,
     len = name->len - (sizeof("arg_") - 1);
     arg = name->data + sizeof("arg_") - 1;
 
-    if (ngx_http_arg(r, arg, len, &value) != NGX_OK) {
+    if (len == 0 || ngx_http_arg(r, arg, len, &value) != NGX_OK) {
         v->not_found = 1;
         return NGX_OK;
     }
@@ -1189,6 +1178,10 @@ ngx_http_variable_content_length(ngx_http_request_t *r,
         v->valid = 1;
         v->no_cacheable = 0;
         v->not_found = 0;
+
+    } else if (r->headers_in.chunked) {
+        v->not_found = 1;
+        v->no_cacheable = 1;
 
     } else {
         v->not_found = 1;
@@ -1319,11 +1312,22 @@ static ngx_int_t
 ngx_http_variable_proxy_protocol_addr(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data)
 {
-    v->len = r->connection->proxy_protocol_addr.len;
+    ngx_str_t             *addr;
+    ngx_proxy_protocol_t  *pp;
+
+    pp = r->connection->proxy_protocol;
+    if (pp == NULL) {
+        v->not_found = 1;
+        return NGX_OK;
+    }
+
+    addr = (ngx_str_t *) ((char *) pp + data);
+
+    v->len = addr->len;
     v->valid = 1;
     v->no_cacheable = 0;
     v->not_found = 0;
-    v->data = r->connection->proxy_protocol_addr.data;
+    v->data = addr->data;
 
     return NGX_OK;
 }
@@ -1333,7 +1337,14 @@ static ngx_int_t
 ngx_http_variable_proxy_protocol_port(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data)
 {
-    ngx_uint_t  port;
+    ngx_uint_t             port;
+    ngx_proxy_protocol_t  *pp;
+
+    pp = r->connection->proxy_protocol;
+    if (pp == NULL) {
+        v->not_found = 1;
+        return NGX_OK;
+    }
 
     v->len = 0;
     v->valid = 1;
@@ -1345,7 +1356,7 @@ ngx_http_variable_proxy_protocol_port(ngx_http_request_t *r,
         return NGX_ERROR;
     }
 
-    port = r->connection->proxy_protocol_port;
+    port = *(in_port_t *) ((char *) pp + data);
 
     if (port > 0 && port < 65536) {
         v->len = ngx_sprintf(v->data, "%ui", port) - v->data;
@@ -1993,6 +2004,29 @@ ngx_http_variable_sent_transfer_encoding(ngx_http_request_t *r,
 }
 
 
+static void
+ngx_http_variable_set_limit_rate(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    ssize_t    s;
+    ngx_str_t  val;
+
+    val.len = v->len;
+    val.data = v->data;
+
+    s = ngx_parse_size(&val);
+
+    if (s == NGX_ERROR) {
+        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
+                      "invalid $limit_rate \"%V\"", &val);
+        return;
+    }
+
+    r->limit_rate = s;
+    r->limit_rate_set = 1;
+}
+
+
 static ngx_int_t
 ngx_http_variable_request_completion(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data)
@@ -2218,6 +2252,31 @@ ngx_http_variable_connection_requests(ngx_http_request_t *r,
     }
 
     v->len = ngx_sprintf(p, "%ui", r->connection->requests) - p;
+    v->valid = 1;
+    v->no_cacheable = 0;
+    v->not_found = 0;
+    v->data = p;
+
+    return NGX_OK;
+}
+
+
+static ngx_int_t
+ngx_http_variable_connection_time(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    u_char          *p;
+    ngx_msec_int_t   ms;
+
+    p = ngx_pnalloc(r->pool, NGX_TIME_T_LEN + 4);
+    if (p == NULL) {
+        return NGX_ERROR;
+    }
+
+    ms = ngx_current_msec - r->connection->start_time;
+    ms = ngx_max(ms, 0);
+
+    v->len = ngx_sprintf(p, "%T.%03M", (time_t) ms / 1000, ms % 1000) - p;
     v->valid = 1;
     v->no_cacheable = 0;
     v->not_found = 0;
@@ -2504,7 +2563,9 @@ ngx_http_regex_exec(ngx_http_request_t *r, ngx_http_regex_t *re, ngx_str_t *s)
     if (re->ncaptures) {
         len = cmcf->ncaptures;
 
-        if (r->captures == NULL) {
+        if (r->captures == NULL || r->realloc_captures) {
+            r->realloc_captures = 0;
+
             r->captures = ngx_palloc(r->pool, len * sizeof(int));
             if (r->captures == NULL) {
                 return NGX_ERROR;

@@ -180,15 +180,7 @@ ngx_http_rewrite_handler(ngx_http_request_t *r)
         code(e);
     }
 
-    if (e->status < NGX_HTTP_BAD_REQUEST) {
-        return e->status;
-    }
-
-    if (r->err_status == 0) {
-        return e->status;
-    }
-
-    return r->err_status;
+    return e->status;
 }
 
 
@@ -325,6 +317,11 @@ ngx_http_rewrite(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     ngx_memzero(regex, sizeof(ngx_http_script_regex_code_t));
 
     value = cf->args->elts;
+
+    if (value[2].len == 0) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "empty replacement");
+        return NGX_CONF_ERROR;
+    }
 
     ngx_memzero(&rc, sizeof(ngx_regex_compile_t));
 

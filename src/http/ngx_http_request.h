@@ -25,22 +25,23 @@
 #define NGX_HTTP_VERSION_11                1001
 #define NGX_HTTP_VERSION_20                2000
 
-#define NGX_HTTP_UNKNOWN                   0x0001
-#define NGX_HTTP_GET                       0x0002
-#define NGX_HTTP_HEAD                      0x0004
-#define NGX_HTTP_POST                      0x0008
-#define NGX_HTTP_PUT                       0x0010
-#define NGX_HTTP_DELETE                    0x0020
-#define NGX_HTTP_MKCOL                     0x0040
-#define NGX_HTTP_COPY                      0x0080
-#define NGX_HTTP_MOVE                      0x0100
-#define NGX_HTTP_OPTIONS                   0x0200
-#define NGX_HTTP_PROPFIND                  0x0400
-#define NGX_HTTP_PROPPATCH                 0x0800
-#define NGX_HTTP_LOCK                      0x1000
-#define NGX_HTTP_UNLOCK                    0x2000
-#define NGX_HTTP_PATCH                     0x4000
-#define NGX_HTTP_TRACE                     0x8000
+#define NGX_HTTP_UNKNOWN                   0x00000001
+#define NGX_HTTP_GET                       0x00000002
+#define NGX_HTTP_HEAD                      0x00000004
+#define NGX_HTTP_POST                      0x00000008
+#define NGX_HTTP_PUT                       0x00000010
+#define NGX_HTTP_DELETE                    0x00000020
+#define NGX_HTTP_MKCOL                     0x00000040
+#define NGX_HTTP_COPY                      0x00000080
+#define NGX_HTTP_MOVE                      0x00000100
+#define NGX_HTTP_OPTIONS                   0x00000200
+#define NGX_HTTP_PROPFIND                  0x00000400
+#define NGX_HTTP_PROPPATCH                 0x00000800
+#define NGX_HTTP_LOCK                      0x00001000
+#define NGX_HTTP_UNLOCK                    0x00002000
+#define NGX_HTTP_PATCH                     0x00004000
+#define NGX_HTTP_TRACE                     0x00008000
+#define NGX_HTTP_CONNECT                   0x00010000
 
 #define NGX_HTTP_CONNECTION_CLOSE          1
 #define NGX_HTTP_CONNECTION_KEEP_ALIVE     2
@@ -301,6 +302,9 @@ typedef struct {
     ngx_chain_t                      *busy;
     ngx_http_chunked_t               *chunked;
     ngx_http_client_body_handler_pt   post_handler;
+    unsigned                          filter_need_buffering:1;
+    unsigned                          last_sent:1;
+    unsigned                          last_saved:1;
 } ngx_http_request_body_t;
 
 
@@ -412,6 +416,7 @@ struct ngx_http_request_s {
 
     ngx_str_t                         method_name;
     ngx_str_t                         http_protocol;
+    ngx_str_t                         schema;
 
     ngx_chain_t                      *out;
     ngx_http_request_t               *main;
@@ -466,8 +471,8 @@ struct ngx_http_request_s {
     /* URI with "+" */
     unsigned                          plus_in_uri:1;
 
-    /* URI with " " */
-    unsigned                          space_in_uri:1;
+    /* URI with empty path */
+    unsigned                          empty_path_in_uri:1;
 
     unsigned                          invalid_header:1;
 
@@ -498,6 +503,10 @@ struct ngx_http_request_s {
     unsigned                          gzip_vary:1;
 #endif
 
+#if (NGX_PCRE)
+    unsigned                          realloc_captures:1;
+#endif
+
     unsigned                          proxy:1;
     unsigned                          bypass_cache:1;
     unsigned                          no_cache:1;
@@ -505,10 +514,13 @@ struct ngx_http_request_s {
     /*
      * instead of using the request context data in
      * ngx_http_limit_conn_module and ngx_http_limit_req_module
-     * we use the single bits in the request structure
+     * we use the bit fields in the request structure
      */
-    unsigned                          limit_conn_set:1;
-    unsigned                          limit_req_set:1;
+    unsigned                          limit_conn_status:2;
+    unsigned                          limit_req_status:3;
+
+    unsigned                          limit_rate_set:1;
+    unsigned                          limit_rate_after_set:1;
 
 #if 0
     unsigned                          cacheable:1;

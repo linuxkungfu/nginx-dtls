@@ -189,6 +189,13 @@ ngx_udp_output_chain_to_iovec(ngx_iovec_t *vec, ngx_chain_t *in, ngx_log_t *log)
         return cl;
     }
 
+    /* zero-sized datagram; pretend to have at least 1 iov */
+    if (n == 0) {
+        iov = &vec->iovs[n++];
+        iov->iov_base = NULL;
+        iov->iov_len = 0;
+    }
+
     vec->count = n;
     vec->size = total;
 
@@ -307,8 +314,8 @@ eintr:
 
     n = sendmsg(c->fd, &msg, 0);
 
-    ngx_log_debug2(NGX_LOG_DEBUG_EVENT, c->log, 0,
-                   "sendmsg: %z of %uz", n, vec->size);
+    ngx_log_debug4(NGX_LOG_DEBUG_EVENT, c->log, 0,
+                   "====sendmsg: %z of %uz fd:%d connection:%p", n, vec->size, c->fd, c);
 
     if (n == -1) {
         err = ngx_errno;

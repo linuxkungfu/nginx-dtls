@@ -49,6 +49,7 @@ static ngx_int_t ngx_http_scgi_create_request(ngx_http_request_t *r);
 static ngx_int_t ngx_http_scgi_reinit_request(ngx_http_request_t *r);
 static ngx_int_t ngx_http_scgi_process_status_line(ngx_http_request_t *r);
 static ngx_int_t ngx_http_scgi_process_header(ngx_http_request_t *r);
+static ngx_int_t ngx_http_scgi_input_filter_init(void *data);
 static void ngx_http_scgi_abort_request(ngx_http_request_t *r);
 static void ngx_http_scgi_finalize_request(ngx_http_request_t *r, ngx_int_t rc);
 
@@ -141,6 +142,13 @@ static ngx_command_t ngx_http_scgi_commands[] = {
       ngx_http_upstream_bind_set_slot,
       NGX_HTTP_LOC_CONF_OFFSET,
       offsetof(ngx_http_scgi_loc_conf_t, upstream.local),
+      NULL },
+
+    { ngx_string("scgi_socket_keepalive"),
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+      ngx_conf_set_flag_slot,
+      NGX_HTTP_LOC_CONF_OFFSET,
+      offsetof(ngx_http_scgi_loc_conf_t, upstream.socket_keepalive),
       NULL },
 
     { ngx_string("scgi_connect_timeout"),
@@ -526,6 +534,10 @@ ngx_http_scgi_handler(ngx_http_request_t *r)
 
     u->pipe->input_filter = ngx_event_pipe_copy_input_filter;
     u->pipe->input_ctx = r;
+
+    u->input_filter_init = ngx_http_scgi_input_filter_init;
+    u->input_filter = ngx_http_upstream_non_buffered_filter;
+    u->input_filter_ctx = r;
 
     if (!scf->upstream.request_buffering
         && scf->upstream.pass_request_body
@@ -1128,13 +1140,46 @@ ngx_http_scgi_process_header(ngx_http_request_t *r)
             return NGX_AGAIN;
         }
 
-        /* there was error while a header line parsing */
+        /* rc == NGX_HTTP_PARSE_INVALID_HEADER */
 
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
-                      "upstream sent invalid header");
+                      "upstream sent invalid header: \"%*s\\x%02xd...\"",
+                      r->header_end - r->header_name_start,
+                      r->header_name_start, *r->header_end);
 
         return NGX_HTTP_UPSTREAM_INVALID_HEADER;
     }
+}
+
+
+static ngx_int_t
+ngx_http_scgi_input_filter_init(void *data)
+{
+    ngx_http_request_t   *r = data;
+    ngx_http_upstream_t  *u;
+
+    u = r->upstream;
+
+    ngx_log_debug2(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+                   "http scgi filter init s:%ui l:%O",
+                   u->headers_in.status_n, u->headers_in.content_length_n);
+
+    if (u->headers_in.status_n == NGX_HTTP_NO_CONTENT
+        || u->headers_in.status_n == NGX_HTTP_NOT_MODIFIED)
+    {
+        u->pipe->length = 0;
+        u->length = 0;
+
+    } else if (r->method == NGX_HTTP_HEAD) {
+        u->pipe->length = -1;
+        u->length = -1;
+
+    } else {
+        u->pipe->length = u->headers_in.content_length_n;
+        u->length = u->headers_in.content_length_n;
+    }
+
+    return NGX_OK;
 }
 
 
@@ -1200,6 +1245,7 @@ ngx_http_scgi_create_loc_conf(ngx_conf_t *cf)
     conf->upstream.force_ranges = NGX_CONF_UNSET;
 
     conf->upstream.local = NGX_CONF_UNSET_PTR;
+    conf->upstream.socket_keepalive = NGX_CONF_UNSET;
 
     conf->upstream.connect_timeout = NGX_CONF_UNSET_MSEC;
     conf->upstream.send_timeout = NGX_CONF_UNSET_MSEC;
@@ -1297,6 +1343,9 @@ ngx_http_scgi_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
 
     ngx_conf_merge_ptr_value(conf->upstream.local,
                               prev->upstream.local, NULL);
+
+    ngx_conf_merge_value(conf->upstream.socket_keepalive,
+                              prev->upstream.socket_keepalive, 0);
 
     ngx_conf_merge_msec_value(conf->upstream.connect_timeout,
                               prev->upstream.connect_timeout, 60000);
@@ -1857,7 +1906,7 @@ ngx_http_scgi_pass(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
 
-    if (clcf->name.data[clcf->name.len - 1] == '/') {
+    if (clcf->name.len && clcf->name.data[clcf->name.len - 1] == '/') {
         clcf->auto_redirect = 1;
     }
 

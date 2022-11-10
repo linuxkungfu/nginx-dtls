@@ -29,10 +29,6 @@
 
 static ngx_inline ngx_int_t
     ngx_output_chain_as_is(ngx_output_chain_ctx_t *ctx, ngx_buf_t *buf);
-#if (NGX_HAVE_AIO_SENDFILE)
-static ngx_int_t ngx_output_chain_aio_setup(ngx_output_chain_ctx_t *ctx,
-    ngx_file_t *file);
-#endif
 static ngx_int_t ngx_output_chain_add_copy(ngx_pool_t *pool,
     ngx_chain_t **chain, ngx_chain_t *in);
 static ngx_int_t ngx_output_chain_align_file_buf(ngx_output_chain_ctx_t *ctx,
@@ -124,6 +120,26 @@ ngx_output_chain(ngx_output_chain_ctx_t *ctx, ngx_chain_t *in)
                 ctx->in = ctx->in->next;
 
                 continue;
+            }
+
+            if (bsize < 0) {
+
+                ngx_log_error(NGX_LOG_ALERT, ctx->pool->log, 0,
+                              "negative size buf in output "
+                              "t:%d r:%d f:%d %p %p-%p %p %O-%O",
+                              ctx->in->buf->temporary,
+                              ctx->in->buf->recycled,
+                              ctx->in->buf->in_file,
+                              ctx->in->buf->start,
+                              ctx->in->buf->pos,
+                              ctx->in->buf->last,
+                              ctx->in->buf->file,
+                              ctx->in->buf->file_pos,
+                              ctx->in->buf->file_last);
+
+                ngx_debug_point();
+
+                return NGX_ERROR;
             }
 
             if (ngx_output_chain_as_is(ctx, ctx->in->buf)) {
@@ -240,15 +256,24 @@ ngx_output_chain_as_is(ngx_output_chain_ctx_t *ctx, ngx_buf_t *buf)
     }
 #endif
 
-    if (buf->in_file && buf->file->directio) {
-        return 0;
-    }
-
     sendfile = ctx->sendfile;
 
 #if (NGX_SENDFILE_LIMIT)
 
     if (buf->in_file && buf->file_pos >= NGX_SENDFILE_LIMIT) {
+        sendfile = 0;
+    }
+
+#endif
+
+#if !(NGX_HAVE_SENDFILE_NODISKIO)
+
+    /*
+     * With DIRECTIO, disable sendfile() unless sendfile(SF_NOCACHE)
+     * is available.
+     */
+
+    if (buf->in_file && buf->file->directio) {
         sendfile = 0;
     }
 
@@ -263,12 +288,6 @@ ngx_output_chain_as_is(ngx_output_chain_ctx_t *ctx, ngx_buf_t *buf)
         buf->in_file = 0;
     }
 
-#if (NGX_HAVE_AIO_SENDFILE)
-    if (ctx->aio_preload && buf->in_file) {
-        (void) ngx_output_chain_aio_setup(ctx, buf->file);
-    }
-#endif
-
     if (ctx->need_in_memory && !ngx_buf_in_memory(buf)) {
         return 0;
     }
@@ -279,28 +298,6 @@ ngx_output_chain_as_is(ngx_output_chain_ctx_t *ctx, ngx_buf_t *buf)
 
     return 1;
 }
-
-
-#if (NGX_HAVE_AIO_SENDFILE)
-
-static ngx_int_t
-ngx_output_chain_aio_setup(ngx_output_chain_ctx_t *ctx, ngx_file_t *file)
-{
-    ngx_event_aio_t  *aio;
-
-    if (file->aio == NULL && ngx_file_aio_init(file, ctx->pool) != NGX_OK) {
-        return NGX_ERROR;
-    }
-
-    aio = file->aio;
-
-    aio->data = ctx->filter_ctx;
-    aio->preload_handler = ctx->aio_preload;
-
-    return NGX_OK;
-}
-
-#endif
 
 
 static ngx_int_t
@@ -665,7 +662,6 @@ ngx_chain_writer(void *data, ngx_chain_t *in)
 
     for (size = 0; in; in = in->next) {
 
-#if 1
         if (ngx_buf_size(in->buf) == 0 && !ngx_buf_special(in->buf)) {
 
             ngx_log_error(NGX_LOG_ALERT, ctx->pool->log, 0,
@@ -685,7 +681,26 @@ ngx_chain_writer(void *data, ngx_chain_t *in)
 
             continue;
         }
-#endif
+
+        if (ngx_buf_size(in->buf) < 0) {
+
+            ngx_log_error(NGX_LOG_ALERT, ctx->pool->log, 0,
+                          "negative size buf in chain writer "
+                          "t:%d r:%d f:%d %p %p-%p %p %O-%O",
+                          in->buf->temporary,
+                          in->buf->recycled,
+                          in->buf->in_file,
+                          in->buf->start,
+                          in->buf->pos,
+                          in->buf->last,
+                          in->buf->file,
+                          in->buf->file_pos,
+                          in->buf->file_last);
+
+            ngx_debug_point();
+
+            return NGX_ERROR;
+        }
 
         size += ngx_buf_size(in->buf);
 
@@ -709,7 +724,6 @@ ngx_chain_writer(void *data, ngx_chain_t *in)
 
     for (cl = ctx->out; cl; cl = cl->next) {
 
-#if 1
         if (ngx_buf_size(cl->buf) == 0 && !ngx_buf_special(cl->buf)) {
 
             ngx_log_error(NGX_LOG_ALERT, ctx->pool->log, 0,
@@ -729,7 +743,26 @@ ngx_chain_writer(void *data, ngx_chain_t *in)
 
             continue;
         }
-#endif
+
+        if (ngx_buf_size(cl->buf) < 0) {
+
+            ngx_log_error(NGX_LOG_ALERT, ctx->pool->log, 0,
+                          "negative size buf in chain writer "
+                          "t:%d r:%d f:%d %p %p-%p %p %O-%O",
+                          cl->buf->temporary,
+                          cl->buf->recycled,
+                          cl->buf->in_file,
+                          cl->buf->start,
+                          cl->buf->pos,
+                          cl->buf->last,
+                          cl->buf->file,
+                          cl->buf->file_pos,
+                          cl->buf->file_last);
+
+            ngx_debug_point();
+
+            return NGX_ERROR;
+        }
 
         size += ngx_buf_size(cl->buf);
     }
@@ -745,6 +778,10 @@ ngx_chain_writer(void *data, ngx_chain_t *in)
 
     if (chain == NGX_CHAIN_ERROR) {
         return NGX_ERROR;
+    }
+
+    if (chain && c->write->ready) {
+        ngx_post_event(c->write, &ngx_posted_next_events);
     }
 
     for (cl = ctx->out; cl && cl != chain; /* void */) {

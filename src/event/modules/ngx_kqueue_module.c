@@ -344,6 +344,12 @@ ngx_kqueue_del_event(ngx_event_t *ev, ngx_int_t event, ngx_uint_t flags)
     ev->active = 0;
     ev->disabled = 0;
 
+    if (ev->data) {
+        ngx_log_debug3(NGX_LOG_DEBUG_EVENT, ev->log, 0, "ngx_kqueue_del_event event: %d fd:%d fl:%04Xi", event, ((ngx_connection_t *)ev->data)->fd, flags);
+    } else {
+        ngx_log_debug2(NGX_LOG_DEBUG_EVENT, ev->log, 0, "ngx_kqueue_del_event event: %d fl:%04Xi", event, flags);
+    }
+
     if (ev->index < nchanges
         && ((uintptr_t) change_list[ev->index].udata & (uintptr_t) ~1)
             == (uintptr_t) ev)
@@ -530,19 +536,19 @@ ngx_kqueue_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
         tp = &ts;
     }
 
-    ngx_log_debug2(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
-                   "kevent timer: %M, changes: %d", timer, n);
+    // ngx_log_debug2(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
+    //                "kevent timer: %M, changes: %d", timer, n);
 
     events = kevent(ngx_kqueue, change_list, n, event_list, (int) nevents, tp);
-
+    // printf("ngx_kqueue_process_events=== events:%d\n", events);
+    // ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "ngx_kqueue_process_events: %d", events);
     err = (events == -1) ? ngx_errno : 0;
 
     if (flags & NGX_UPDATE_TIME || ngx_event_timer_alarm) {
         ngx_time_update();
     }
 
-    ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
-                   "kevent events: %d", events);
+    // ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "kevent events: %d", events);
 
     if (err) {
         if (err == NGX_EINTR) {
@@ -594,7 +600,6 @@ ngx_kqueue_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 #endif
 
         ev = (ngx_event_t *) event_list[i].udata;
-
         switch (event_list[i].filter) {
 
         case EVFILT_READ:
@@ -602,7 +607,6 @@ ngx_kqueue_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 
             instance = (uintptr_t) ev & 1;
             ev = (ngx_event_t *) ((uintptr_t) ev & (uintptr_t) ~1);
-
             if (ev->closed || ev->instance != instance) {
 
                 /*
@@ -665,10 +669,16 @@ ngx_kqueue_process_events(ngx_cycle_t *cycle, ngx_msec_t timer,
 
             continue;
         }
-
+        // ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "ngx_kqueue_process_events===:%d", 1);
+        // printf("ngx_kqueue_process_events===:%ld\n", i);
+        // if (ev->data) {
+        //     ngx_log_debug3(NGX_LOG_DEBUG_EVENT, ev->log, 0, "ngx_kqueue_process_events event: %d: ft:%i fl:%04Xi", ((ngx_connection_t*)ev->data)->fd, event_list[i].filter, flags);
+        // } else {
+        //     ngx_log_debug3(NGX_LOG_DEBUG_EVENT, ev->log, 0, "ngx_kqueue_process_events event i: %d: ft:%i fl:%04Xi", i, event_list[i].filter, flags);
+        // }
         ev->handler(ev);
     }
-
+    // printf("ngx_kqueue_process_events===\n");
     return NGX_OK;
 }
 

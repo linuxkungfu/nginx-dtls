@@ -84,7 +84,7 @@ ngx_poll_init(ngx_cycle_t *cycle, ngx_msec_t timer)
         }
 
         if (event_list) {
-            ngx_memcpy(list, event_list, sizeof(ngx_event_t *) * nevents);
+            ngx_memcpy(list, event_list, sizeof(struct pollfd) * nevents);
             ngx_free(event_list);
         }
 
@@ -370,6 +370,7 @@ ngx_poll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)
 
             ev = c->read;
             ev->ready = 1;
+            ev->available = -1;
 
             queue = ev->accept ? &ngx_posted_accept_events
                                : &ngx_posted_events;

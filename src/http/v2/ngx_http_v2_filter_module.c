@@ -944,15 +944,15 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
 
     ph = ngx_http_v2_push_headers;
 
+    len = ngx_max(r->schema.len, path->len);
+
     if (binary[0].len) {
-        tmp = ngx_palloc(r->pool, path->len);
+        tmp = ngx_palloc(r->pool, len);
         if (tmp == NULL) {
             return NGX_ERROR;
         }
 
     } else {
-        len = path->len;
-
         for (i = 0; i < NGX_HTTP_V2_PUSH_HEADERS; i++) {
             h = (ngx_table_elt_t **) ((char *) &r->headers_in + ph[i].offset);
 
@@ -994,7 +994,7 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
     len = (h2c->table_update ? 1 : 0)
           + 1
           + 1 + NGX_HTTP_V2_INT_OCTETS + path->len
-          + 1;
+          + 1 + NGX_HTTP_V2_INT_OCTETS + r->schema.len;
 
     for (i = 0; i < NGX_HTTP_V2_PUSH_HEADERS; i++) {
         len += binary[i].len;
@@ -1025,18 +1025,20 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
     *pos++ = ngx_http_v2_inc_indexed(NGX_HTTP_V2_PATH_INDEX);
     pos = ngx_http_v2_write_value(pos, path->data, path->len, tmp);
 
-#if (NGX_HTTP_SSL)
-    if (fc->ssl) {
-        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, fc->log, 0,
-                       "http2 push header: \":scheme: https\"");
+    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, fc->log, 0,
+                   "http2 push header: \":scheme: %V\"", &r->schema);
+
+    if (r->schema.len == 5 && ngx_strncmp(r->schema.data, "https", 5) == 0) {
         *pos++ = ngx_http_v2_indexed(NGX_HTTP_V2_SCHEME_HTTPS_INDEX);
 
-    } else
-#endif
+    } else if (r->schema.len == 4
+               && ngx_strncmp(r->schema.data, "http", 4) == 0)
     {
-        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, fc->log, 0,
-                       "http2 push header: \":scheme: http\"");
         *pos++ = ngx_http_v2_indexed(NGX_HTTP_V2_SCHEME_HTTP_INDEX);
+
+    } else {
+        *pos++ = ngx_http_v2_inc_indexed(NGX_HTTP_V2_SCHEME_HTTP_INDEX);
+        pos = ngx_http_v2_write_value(pos, r->schema.data, r->schema.len, tmp);
     }
 
     for (i = 0; i < NGX_HTTP_V2_PUSH_HEADERS; i++) {
@@ -1430,6 +1432,9 @@ ngx_http_v2_send_chain(ngx_connection_t *fc, ngx_chain_t *in, off_t limit)
     size = 0;
 #endif
 
+    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, fc->log, 0,
+                   "http2 send chain: %p", in);
+
     while (in) {
         size = ngx_buf_size(in->buf);
 
@@ -1442,12 +1447,14 @@ ngx_http_v2_send_chain(ngx_connection_t *fc, ngx_chain_t *in, off_t limit)
 
     if (in == NULL || stream->out_closed) {
 
-        if (stream->queued) {
-            fc->write->active = 1;
-            fc->write->ready = 0;
+        if (size) {
+            ngx_log_error(NGX_LOG_ERR, fc->log, 0,
+                          "output on closed stream");
+            return NGX_CHAIN_ERROR;
+        }
 
-        } else {
-            fc->buffered &= ~NGX_HTTP_V2_BUFFERED;
+        if (ngx_http_v2_filter_send(fc, stream) == NGX_ERROR) {
+            return NGX_CHAIN_ERROR;
         }
 
         return NULL;
@@ -1456,9 +1463,16 @@ ngx_http_v2_send_chain(ngx_connection_t *fc, ngx_chain_t *in, off_t limit)
     h2c = stream->connection;
 
     if (size && ngx_http_v2_flow_control(h2c, stream) == NGX_DECLINED) {
-        fc->write->active = 1;
-        fc->write->ready = 0;
-        return in;
+
+        if (ngx_http_v2_filter_send(fc, stream) == NGX_ERROR) {
+            return NGX_CHAIN_ERROR;
+        }
+
+        if (ngx_http_v2_flow_control(h2c, stream) == NGX_DECLINED) {
+            fc->write->active = 1;
+            fc->write->ready = 0;
+            return in;
+        }
     }
 
     if (in->buf->tag == (ngx_buf_tag_t) &ngx_http_v2_filter_get_shadow) {
@@ -1661,22 +1675,34 @@ static ngx_http_v2_out_frame_t *
 ngx_http_v2_filter_get_data_frame(ngx_http_v2_stream_t *stream,
     size_t len, ngx_chain_t *first, ngx_chain_t *last)
 {
-    u_char                    flags;
-    ngx_buf_t                *buf;
-    ngx_chain_t              *cl;
-    ngx_http_v2_out_frame_t  *frame;
+    u_char                     flags;
+    ngx_buf_t                 *buf;
+    ngx_chain_t               *cl;
+    ngx_http_v2_out_frame_t   *frame;
+    ngx_http_v2_connection_t  *h2c;
 
     frame = stream->free_frames;
+    h2c = stream->connection;
 
     if (frame) {
         stream->free_frames = frame->next;
 
-    } else {
+    } else if (h2c->frames < 10000) {
         frame = ngx_palloc(stream->request->pool,
                            sizeof(ngx_http_v2_out_frame_t));
         if (frame == NULL) {
             return NULL;
         }
+
+        stream->frames++;
+        h2c->frames++;
+
+    } else {
+        ngx_log_error(NGX_LOG_INFO, h2c->connection->log, 0,
+                      "http2 flood detected");
+
+        h2c->connection->error = 1;
+        return NULL;
     }
 
     flags = last->buf->last_buf ? NGX_HTTP_V2_END_STREAM_FLAG : 0;
@@ -1789,6 +1815,11 @@ ngx_http_v2_waiting_queue(ngx_http_v2_connection_t *h2c,
 static ngx_inline ngx_int_t
 ngx_http_v2_filter_send(ngx_connection_t *fc, ngx_http_v2_stream_t *stream)
 {
+    if (stream->queued == 0) {
+        fc->buffered &= ~NGX_HTTP_V2_BUFFERED;
+        return NGX_OK;
+    }
+
     stream->blocked = 1;
 
     if (ngx_http_v2_send_output_queue(stream->connection) == NGX_ERROR) {
@@ -1857,6 +1888,8 @@ ngx_http_v2_headers_frame_handler(ngx_http_v2_connection_t *h2c,
     stream->request->header_size += NGX_HTTP_V2_FRAME_HEADER_SIZE
                                     + frame->length;
 
+    h2c->payload_bytes += frame->length;
+
     ngx_http_v2_handle_frame(stream, frame);
 
     ngx_http_v2_handle_stream(h2c, stream);
@@ -1910,6 +1943,8 @@ ngx_http_v2_push_frame_handler(ngx_http_v2_connection_t *h2c,
 
     stream->request->header_size += NGX_HTTP_V2_FRAME_HEADER_SIZE
                                     + frame->length;
+
+    h2c->payload_bytes += frame->length;
 
     ngx_http_v2_handle_frame(stream, frame);
 
@@ -2004,6 +2039,8 @@ done:
 
     stream->request->header_size += NGX_HTTP_V2_FRAME_HEADER_SIZE;
 
+    h2c->payload_bytes += frame->length;
+
     ngx_http_v2_handle_frame(stream, frame);
 
     ngx_http_v2_handle_stream(h2c, stream);
@@ -2016,11 +2053,16 @@ static ngx_inline void
 ngx_http_v2_handle_frame(ngx_http_v2_stream_t *stream,
     ngx_http_v2_out_frame_t *frame)
 {
-    ngx_http_request_t  *r;
+    ngx_http_request_t        *r;
+    ngx_http_v2_connection_t  *h2c;
 
     r = stream->request;
 
     r->connection->sent += NGX_HTTP_V2_FRAME_HEADER_SIZE + frame->length;
+
+    h2c = stream->connection;
+
+    h2c->total_bytes += NGX_HTTP_V2_FRAME_HEADER_SIZE + frame->length;
 
     if (frame->fin) {
         stream->out_closed = 1;

@@ -23,7 +23,7 @@ ngx_udp_unix_recv(ngx_connection_t *c, u_char *buf, size_t size)
         n = recv(c->fd, buf, size, 0);
 
         ngx_log_debug3(NGX_LOG_DEBUG_EVENT, c->log, 0,
-                       "recv: fd:%d %z of %uz", c->fd, n, size);
+                       "====ngx_udp_unix_recv recv: fd:%d %z of %uz", c->fd, n, size);
 
         if (n >= 0) {
 
@@ -51,8 +51,8 @@ ngx_udp_unix_recv(ngx_connection_t *c, u_char *buf, size_t size)
         err = ngx_socket_errno;
 
         if (err == NGX_EAGAIN || err == NGX_EINTR) {
-            ngx_log_debug0(NGX_LOG_DEBUG_EVENT, c->log, err,
-                           "recv() not ready");
+            ngx_log_debug1(NGX_LOG_DEBUG_EVENT, c->log, err,
+                           "ngx_udp_unix_recv recv(%d) not ready", c->fd);
             n = NGX_AGAIN;
 
         } else {

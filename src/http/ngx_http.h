@@ -88,6 +88,10 @@ void ngx_http_close_connection(ngx_connection_t *c);
 #if (NGX_HTTP_SSL && defined SSL_CTRL_SET_TLSEXT_HOSTNAME)
 int ngx_http_ssl_servername(ngx_ssl_conn_t *ssl_conn, int *ad, void *arg);
 #endif
+#if (NGX_HTTP_SSL && defined SSL_R_CERT_CB_ERROR)
+int ngx_http_ssl_certificate(ngx_ssl_conn_t *ssl_conn, void *arg);
+#endif
+
 
 ngx_int_t ngx_http_parse_request_line(ngx_http_request_t *r, ngx_buf_t *b);
 ngx_int_t ngx_http_parse_uri(ngx_http_request_t *r);
@@ -160,6 +164,14 @@ ngx_int_t ngx_http_set_default_types(ngx_conf_t *cf, ngx_array_t **types,
 
 #if (NGX_HTTP_DEGRADATION)
 ngx_uint_t  ngx_http_degraded(ngx_http_request_t *);
+#endif
+
+
+#if (NGX_HTTP_V2)
+ngx_int_t ngx_http_huff_decode(u_char *state, u_char *src, size_t len,
+    u_char **dst, ngx_uint_t last, ngx_log_t *log);
+size_t ngx_http_huff_encode(u_char *src, size_t len, u_char *dst,
+    ngx_uint_t lower);
 #endif
 
 

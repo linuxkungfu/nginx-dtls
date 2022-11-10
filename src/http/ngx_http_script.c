@@ -104,6 +104,37 @@ ngx_http_complex_value(ngx_http_request_t *r, ngx_http_complex_value_t *val,
 }
 
 
+size_t
+ngx_http_complex_value_size(ngx_http_request_t *r,
+    ngx_http_complex_value_t *val, size_t default_value)
+{
+    size_t     size;
+    ngx_str_t  value;
+
+    if (val == NULL) {
+        return default_value;
+    }
+
+    if (val->lengths == NULL) {
+        return val->u.size;
+    }
+
+    if (ngx_http_complex_value(r, val, &value) != NGX_OK) {
+        return default_value;
+    }
+
+    size = ngx_parse_size(&value);
+
+    if (size == (size_t) NGX_ERROR) {
+        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
+                      "invalid size \"%V\"", &value);
+        return default_value;
+    }
+
+    return size;
+}
+
+
 ngx_int_t
 ngx_http_compile_complex_value(ngx_http_compile_complex_value_t *ccv)
 {
@@ -219,7 +250,7 @@ ngx_http_set_complex_value_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     cv = (ngx_http_complex_value_t **) (p + cmd->offset);
 
-    if (*cv != NULL) {
+    if (*cv != NGX_CONF_UNSET_PTR && *cv != NULL) {
         return "is duplicate";
     }
 
@@ -238,6 +269,74 @@ ngx_http_set_complex_value_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     if (ngx_http_compile_complex_value(&ccv) != NGX_OK) {
         return NGX_CONF_ERROR;
+    }
+
+    return NGX_CONF_OK;
+}
+
+
+char *
+ngx_http_set_complex_value_zero_slot(ngx_conf_t *cf, ngx_command_t *cmd,
+    void *conf)
+{
+    char  *p = conf;
+
+    ngx_str_t                          *value;
+    ngx_http_complex_value_t          **cv;
+    ngx_http_compile_complex_value_t    ccv;
+
+    cv = (ngx_http_complex_value_t **) (p + cmd->offset);
+
+    if (*cv != NGX_CONF_UNSET_PTR) {
+        return "is duplicate";
+    }
+
+    *cv = ngx_palloc(cf->pool, sizeof(ngx_http_complex_value_t));
+    if (*cv == NULL) {
+        return NGX_CONF_ERROR;
+    }
+
+    value = cf->args->elts;
+
+    ngx_memzero(&ccv, sizeof(ngx_http_compile_complex_value_t));
+
+    ccv.cf = cf;
+    ccv.value = &value[1];
+    ccv.complex_value = *cv;
+    ccv.zero = 1;
+
+    if (ngx_http_compile_complex_value(&ccv) != NGX_OK) {
+        return NGX_CONF_ERROR;
+    }
+
+    return NGX_CONF_OK;
+}
+
+
+char *
+ngx_http_set_complex_value_size_slot(ngx_conf_t *cf, ngx_command_t *cmd,
+    void *conf)
+{
+    char  *p = conf;
+
+    char                      *rv;
+    ngx_http_complex_value_t  *cv;
+
+    rv = ngx_http_set_complex_value_slot(cf, cmd, conf);
+
+    if (rv != NGX_CONF_OK) {
+        return rv;
+    }
+
+    cv = *(ngx_http_complex_value_t **) (p + cmd->offset);
+
+    if (cv->lengths) {
+        return NGX_CONF_OK;
+    }
+
+    cv->u.size = ngx_parse_size(&cv->value);
+    if (cv->u.size == (size_t) NGX_ERROR) {
+        return "invalid value";
     }
 
     return NGX_CONF_OK;
@@ -263,6 +362,34 @@ ngx_http_test_predicates(ngx_http_request_t *r, ngx_array_t *predicates)
         }
 
         if (val.len && (val.len != 1 || val.data[0] != '0')) {
+            return NGX_DECLINED;
+        }
+    }
+
+    return NGX_OK;
+}
+
+
+ngx_int_t
+ngx_http_test_required_predicates(ngx_http_request_t *r,
+    ngx_array_t *predicates)
+{
+    ngx_str_t                  val;
+    ngx_uint_t                 i;
+    ngx_http_complex_value_t  *cv;
+
+    if (predicates == NULL) {
+        return NGX_OK;
+    }
+
+    cv = predicates->elts;
+
+    for (i = 0; i < predicates->nelts; i++) {
+        if (ngx_http_complex_value(r, &cv[i], &val) != NGX_OK) {
+            return NGX_ERROR;
+        }
+
+        if (val.len == 0 || (val.len == 1 && val.data[0] == '0')) {
             return NGX_DECLINED;
         }
     }
@@ -1381,7 +1508,14 @@ ngx_http_script_return_code(ngx_http_script_engine_t *e)
 void
 ngx_http_script_break_code(ngx_http_script_engine_t *e)
 {
-    e->request->uri_changed = 0;
+    ngx_http_request_t  *r;
+
+    r = e->request;
+
+    if (r->uri_changed) {
+        r->valid_location = 0;
+        r->uri_changed = 0;
+    }
 
     e->ip = ngx_http_script_exit;
 }

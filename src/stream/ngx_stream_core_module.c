@@ -143,13 +143,15 @@ ngx_stream_core_run_phases(ngx_stream_session_t *s)
     ngx_int_t                     rc;
     ngx_stream_phase_handler_t   *ph;
     ngx_stream_core_main_conf_t  *cmcf;
-
+    int i;
+    // ngx_log_debug(NGX_LOG_DEBUG_STREAM, s->connection->log, 0, "ngx_stream_core_run_phases++++");
     cmcf = ngx_stream_get_module_main_conf(s, ngx_stream_core_module);
 
     ph = cmcf->phase_engine.handlers;
-
+    i = 0;
     while (ph[s->phase_handler].checker) {
-
+        i++;
+        // ngx_log_debug1(NGX_LOG_DEBUG_STREAM, s->connection->log, 0, "ngx_stream_core_run_phases++++:%d", i);
         rc = ph[s->phase_handler].checker(s, &ph[s->phase_handler]);
 
         if (rc == NGX_OK) {
@@ -249,32 +251,38 @@ ngx_stream_core_preread_phase(ngx_stream_session_t *s,
         }
 
         if (!c->read->ready) {
-            if (ngx_handle_read_event(c->read, 0) != NGX_OK) {
-                rc = NGX_ERROR;
-                break;
-            }
-
-            if (!c->read->timer_set) {
-                ngx_add_timer(c->read, cscf->preread_timeout);
-            }
-
-            c->read->handler = ngx_stream_session_handler;
-
-            return NGX_OK;
+            break;
         }
 
         n = c->recv(c, c->buffer->last, size);
 
-        if (n == NGX_ERROR) {
+        if (n == NGX_ERROR || n == 0) {
             rc = NGX_STREAM_OK;
             break;
         }
 
-        if (n > 0) {
-            c->buffer->last += n;
+        if (n == NGX_AGAIN) {
+            break;
         }
 
+        c->buffer->last += n;
+
         rc = ph->handler(s);
+    }
+
+    if (rc == NGX_AGAIN) {
+        if (ngx_handle_read_event(c->read, 0) != NGX_OK) {
+            ngx_stream_finalize_session(s, NGX_STREAM_INTERNAL_SERVER_ERROR);
+            return NGX_OK;
+        }
+
+        if (!c->read->timer_set) {
+            ngx_add_timer(c->read, cscf->preread_timeout);
+        }
+
+        c->read->handler = ngx_stream_session_handler;
+
+        return NGX_OK;
     }
 
     if (c->read->timer_set) {
@@ -571,7 +579,7 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     ngx_str_t                    *value, size;
     ngx_url_t                     u;
-    ngx_uint_t                    i, backlog;
+    ngx_uint_t                    i, n, backlog;
     ngx_stream_listen_t          *ls, *als;
     ngx_stream_core_main_conf_t  *cmcf;
 
@@ -596,22 +604,22 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     cmcf = ngx_stream_conf_get_module_main_conf(cf, ngx_stream_core_module);
 
-    ls = ngx_array_push(&cmcf->listen);
+    ls = ngx_array_push_n(&cmcf->listen, u.naddrs);
     if (ls == NULL) {
         return NGX_CONF_ERROR;
     }
 
     ngx_memzero(ls, sizeof(ngx_stream_listen_t));
 
-    ngx_memcpy(&ls->sockaddr.sockaddr, &u.sockaddr, u.socklen);
-
-    ls->socklen = u.socklen;
     ls->backlog = NGX_LISTEN_BACKLOG;
     ls->rcvbuf = -1;
     ls->sndbuf = -1;
     ls->type = SOCK_STREAM;
-    ls->wildcard = u.wildcard;
     ls->ctx = cf->ctx;
+
+#if (NGX_HAVE_TCP_FASTOPEN)
+    ls->fastopen = -1;
+#endif
 
 #if (NGX_HAVE_INET6)
     ls->ipv6only = 1;
@@ -632,6 +640,21 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             ls->bind = 1;
             continue;
         }
+
+#if (NGX_HAVE_TCP_FASTOPEN)
+        if (ngx_strncmp(value[i].data, "fastopen=", 9) == 0) {
+            ls->fastopen = ngx_atoi(value[i].data + 9, value[i].len - 9);
+            ls->bind = 1;
+
+            if (ls->fastopen == NGX_ERROR) {
+                ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
+                                   "invalid fastopen \"%V\"", &value[i]);
+                return NGX_CONF_ERROR;
+            }
+
+            continue;
+        }
+#endif
 
         if (ngx_strncmp(value[i].data, "backlog=", 8) == 0) {
             ls->backlog = ngx_atoi(value[i].data + 8, value[i].len - 8);
@@ -682,35 +705,20 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         if (ngx_strncmp(value[i].data, "ipv6only=o", 10) == 0) {
 #if (NGX_HAVE_INET6 && defined IPV6_V6ONLY)
-            size_t  len;
-            u_char  buf[NGX_SOCKADDR_STRLEN];
+            if (ngx_strcmp(&value[i].data[10], "n") == 0) {
+                ls->ipv6only = 1;
 
-            if (ls->sockaddr.sockaddr.sa_family == AF_INET6) {
-
-                if (ngx_strcmp(&value[i].data[10], "n") == 0) {
-                    ls->ipv6only = 1;
-
-                } else if (ngx_strcmp(&value[i].data[10], "ff") == 0) {
-                    ls->ipv6only = 0;
-
-                } else {
-                    ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                                       "invalid ipv6only flags \"%s\"",
-                                       &value[i].data[9]);
-                    return NGX_CONF_ERROR;
-                }
-
-                ls->bind = 1;
+            } else if (ngx_strcmp(&value[i].data[10], "ff") == 0) {
+                ls->ipv6only = 0;
 
             } else {
-                len = ngx_sock_ntop(&ls->sockaddr.sockaddr, ls->socklen, buf,
-                                    NGX_SOCKADDR_STRLEN, 1);
-
                 ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                                   "ipv6only is not supported "
-                                   "on addr \"%*s\", ignored", len, buf);
+                                   "invalid ipv6only flags \"%s\"",
+                                   &value[i].data[9]);
+                return NGX_CONF_ERROR;
             }
 
+            ls->bind = 1;
             continue;
 #else
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
@@ -734,7 +742,17 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         if (ngx_strcmp(value[i].data, "ssl") == 0) {
 #if (NGX_STREAM_SSL)
+            ngx_stream_ssl_conf_t  *sslcf;
+
+            sslcf = ngx_stream_conf_get_module_srv_conf(cf,
+                                                        ngx_stream_ssl_module);
+
+            sslcf->listen = 1;
+            sslcf->file = cf->conf_file->file.name.data;
+            sslcf->line = cf->conf_file->line;
+
             ls->ssl = 1;
+
             continue;
 #else
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
@@ -856,25 +874,41 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         if (ls->proxy_protocol) {
             return "\"proxy_protocol\" parameter is incompatible with \"udp\"";
         }
+
+#if (NGX_HAVE_TCP_FASTOPEN)
+        if (ls->fastopen != -1) {
+            return "\"fastopen\" parameter is incompatible with \"udp\"";
+        }
+#endif
     }
 
     als = cmcf->listen.elts;
 
-    for (i = 0; i < cmcf->listen.nelts - 1; i++) {
-        if (ls->type != als[i].type) {
-            continue;
-        }
+    for (n = 0; n < u.naddrs; n++) {
+        ls[n] = ls[0];
 
-        if (ngx_cmp_sockaddr(&als[i].sockaddr.sockaddr, als[i].socklen,
-                             &ls->sockaddr.sockaddr, ls->socklen, 1)
-            != NGX_OK)
-        {
-            continue;
-        }
+        ls[n].sockaddr = u.addrs[n].sockaddr;
+        ls[n].socklen = u.addrs[n].socklen;
+        ls[n].addr_text = u.addrs[n].name;
+        ls[n].wildcard = ngx_inet_wildcard(ls[n].sockaddr);
 
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                           "duplicate \"%V\" address and port pair", &u.url);
-        return NGX_CONF_ERROR;
+        for (i = 0; i < cmcf->listen.nelts - u.naddrs + n; i++) {
+            if (ls[n].type != als[i].type) {
+                continue;
+            }
+
+            if (ngx_cmp_sockaddr(als[i].sockaddr, als[i].socklen,
+                                 ls[n].sockaddr, ls[n].socklen, 1)
+                != NGX_OK)
+            {
+                continue;
+            }
+
+            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
+                               "duplicate \"%V\" address and port pair",
+                               &ls[n].addr_text);
+            return NGX_CONF_ERROR;
+        }
     }
 
     return NGX_CONF_OK;

@@ -21,6 +21,7 @@ typedef struct {
 
     ngx_ssl_t        ssl;
 
+    ngx_uint_t       listen;
     ngx_uint_t       protocols;
 
     ngx_uint_t       verify;
@@ -33,20 +34,28 @@ typedef struct {
     ngx_array_t     *certificates;
     ngx_array_t     *certificate_keys;
 
+    ngx_array_t     *certificate_values;
+    ngx_array_t     *certificate_key_values;
+
     ngx_str_t        dhparam;
     ngx_str_t        ecdh_curve;
     ngx_str_t        client_certificate;
     ngx_str_t        trusted_certificate;
     ngx_str_t        crl;
+    ngx_str_t        alpn;
 
     ngx_str_t        ciphers;
 
     ngx_array_t     *passwords;
+    ngx_array_t     *conf_commands;
 
     ngx_shm_zone_t  *shm_zone;
 
     ngx_flag_t       session_tickets;
     ngx_array_t     *session_ticket_keys;
+
+    u_char          *file;
+    ngx_uint_t       line;
 } ngx_stream_ssl_conf_t;
 
 

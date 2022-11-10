@@ -102,18 +102,8 @@ if [ $HTTP = YES ]; then
     fi
 
 
-    if [ $HTTP_SSI = YES ]; then
-        HTTP_POSTPONE=YES
-    fi
-
-
-    if [ $HTTP_SLICE = YES ]; then
-        HTTP_POSTPONE=YES
-    fi
-
-
-    if [ $HTTP_ADDITION = YES ]; then
-        HTTP_POSTPONE=YES
+    if [ $HTTP_V2 = YES ]; then
+        HTTP_SRCS="$HTTP_SRCS $HTTP_HUFF_SRCS"
     fi
 
 
@@ -252,13 +242,13 @@ if [ $HTTP = YES ]; then
         . auto/module
     fi
 
-    if [ $HTTP_POSTPONE = YES ]; then
+    if :; then
         ngx_module_name=ngx_http_postpone_filter_module
         ngx_module_incs=
         ngx_module_deps=
         ngx_module_srcs=src/http/ngx_http_postpone_filter_module.c
         ngx_module_libs=
-        ngx_module_link=$HTTP_POSTPONE
+        ngx_module_link=YES
 
         . auto/module
     fi
@@ -429,8 +419,6 @@ if [ $HTTP = YES ]; then
         ngx_module_srcs="src/http/v2/ngx_http_v2.c \
                          src/http/v2/ngx_http_v2_table.c \
                          src/http/v2/ngx_http_v2_encode.c \
-                         src/http/v2/ngx_http_v2_huff_decode.c \
-                         src/http/v2/ngx_http_v2_huff_encode.c \
                          src/http/v2/ngx_http_v2_module.c"
         ngx_module_libs=
         ngx_module_link=$HTTP_V2
@@ -878,6 +866,17 @@ if [ $HTTP = YES ]; then
         . auto/module
     fi
 
+    if [ $HTTP_UPSTREAM_RANDOM = YES ]; then
+        ngx_module_name=ngx_http_upstream_random_module
+        ngx_module_incs=
+        ngx_module_deps=
+        ngx_module_srcs=src/http/modules/ngx_http_upstream_random_module.c
+        ngx_module_libs=
+        ngx_module_link=$HTTP_UPSTREAM_RANDOM
+
+        . auto/module
+    fi
+
     if [ $HTTP_UPSTREAM_KEEPALIVE = YES ]; then
         ngx_module_name=ngx_http_upstream_keepalive_module
         ngx_module_incs=
@@ -987,6 +986,12 @@ if [ $MAIL != NO ]; then
     ngx_module_name=ngx_mail_proxy_module
     ngx_module_deps=
     ngx_module_srcs=src/mail/ngx_mail_proxy_module.c
+
+    . auto/module
+
+    ngx_module_name=ngx_mail_realip_module
+    ngx_module_deps=
+    ngx_module_srcs=src/mail/ngx_mail_realip_module.c
 
     . auto/module
 fi
@@ -1123,6 +1128,16 @@ if [ $STREAM != NO ]; then
         . auto/module
     fi
 
+    if [ $STREAM_SET = YES ]; then
+        ngx_module_name=ngx_stream_set_module
+        ngx_module_deps=
+        ngx_module_srcs=src/stream/ngx_stream_set_module.c
+        ngx_module_libs=
+        ngx_module_link=$STREAM_SET
+
+        . auto/module
+    fi
+
     if [ $STREAM_UPSTREAM_HASH = YES ]; then
         ngx_module_name=ngx_stream_upstream_hash_module
         ngx_module_deps=
@@ -1139,6 +1154,16 @@ if [ $STREAM != NO ]; then
         ngx_module_srcs=src/stream/ngx_stream_upstream_least_conn_module.c
         ngx_module_libs=
         ngx_module_link=$STREAM_UPSTREAM_LEAST_CONN
+
+        . auto/module
+    fi
+
+    if [ $STREAM_UPSTREAM_RANDOM = YES ]; then
+        ngx_module_name=ngx_stream_upstream_random_module
+        ngx_module_deps=
+        ngx_module_srcs=src/stream/ngx_stream_upstream_random_module.c
+        ngx_module_libs=
+        ngx_module_link=$STREAM_UPSTREAM_RANDOM
 
         . auto/module
     fi

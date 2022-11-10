@@ -41,8 +41,9 @@ typedef struct {
 
 
 typedef struct {
-    ngx_sockaddr_t                 sockaddr;
+    struct sockaddr               *sockaddr;
     socklen_t                      socklen;
+    ngx_str_t                      addr_text;
 
     /* server ctx */
     ngx_stream_conf_ctx_t         *ctx;
@@ -64,6 +65,9 @@ typedef struct {
     int                            backlog;
     int                            rcvbuf;
     int                            sndbuf;
+#if (NGX_HAVE_TCP_FASTOPEN)
+    int                            fastopen;
+#endif
     int                            type;
 } ngx_stream_listen_t;
 
@@ -225,6 +229,8 @@ struct ngx_stream_session_s {
     unsigned                       stat_processing:1;
 
     unsigned                       health_check:1;
+
+    unsigned                       limit_conn_status:2;
 };
 
 
