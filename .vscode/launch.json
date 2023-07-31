@@ -1,0 +1,36 @@
+{
+	// 使用 IntelliSense 了解相关属性。 
+	// 悬停以查看现有属性的描述。
+	// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "cst-nginx",
+			// "type": "node",
+			"type": "node",
+			"request": "launch",
+			"cwd": "${workspaceRoot}",
+			"runtimeExecutable": "/Users/jianjunzhou/.nvm/versions/node/v16.7.0/bin/npm",
+			// "windows": { "runtimeExecutable": "npm.cmd" },
+			"runtimeArgs": [ "run", "debug" ],
+			"console": "integratedTerminal",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"protocol": "auto",
+			"restart": true,
+			"env":{
+				"MASTER_URL": "http://192.168.200.103",
+        "NGINX_LISTEN": "25157 udp ssl reuseport",
+        "_NGINX_UPSTREAM": "192.168.206.107:25156;",
+        "INNER_ADDR": "",
+        "EXTERNAL_ADDR": "",
+        "LOCAL_IDCX": "CN0XXXX0001",
+        "NODE_TYPE": "NGINX_DTLS_ENCRYPT",
+        "ENABLE_REGISTER": "true",
+				"PROBE_UDP":"true"
+			},
+      "autoAttachChildProcesses": true
+		}
+	]
+}
