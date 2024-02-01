@@ -1,0 +1,763 @@
+2023/08/02 14:33:09 [notice] 67330#0: using the "kqueue" event method
+2023/08/02 14:33:09 [notice] 67330#0: nginx/1.22.0
+2023/08/02 14:33:09 [notice] 67330#0: built by clang 14.0.0 (clang-1400.0.29.202)
+2023/08/02 14:33:09 [notice] 67330#0: OS: Darwin 22.5.0
+2023/08/02 14:33:09 [notice] 67330#0: hw.ncpu: 16
+2023/08/02 14:33:09 [notice] 67330#0: net.inet.tcp.sendspace: 131072
+2023/08/02 14:33:09 [notice] 67330#0: kern.ipc.somaxconn: 128
+2023/08/02 14:33:09 [notice] 67330#0: getrlimit(RLIMIT_NOFILE): 2560:9223372036854775807
+2023/08/02 14:34:10 [notice] 67330#0: signal 2 (SIGINT) received from 16005, exiting
+2023/08/02 14:34:10 [notice] 67330#0: exit
+2023/08/02 14:34:12 [notice] 67356#0: using the "kqueue" event method
+2023/08/02 14:34:12 [notice] 67356#0: nginx/1.22.0
+2023/08/02 14:34:12 [notice] 67356#0: built by clang 14.0.0 (clang-1400.0.29.202)
+2023/08/02 14:34:12 [notice] 67356#0: OS: Darwin 22.5.0
+2023/08/02 14:34:12 [notice] 67356#0: hw.ncpu: 16
+2023/08/02 14:34:12 [notice] 67356#0: net.inet.tcp.sendspace: 131072
+2023/08/02 14:34:12 [notice] 67356#0: kern.ipc.somaxconn: 128
+2023/08/02 14:34:12 [notice] 67356#0: getrlimit(RLIMIT_NOFILE): 2560:9223372036854775807
+2023/08/02 14:34:12 [debug] 67356#0: kevent set event: 5: ft:-1 fl:0005
+2023/08/02 14:34:17 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:34:17 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:34:17 [debug] 67356#0: posix_memalign: 0000600002F4C700:256 @16
+2023/08/02 14:34:17 [debug] 67356#0: posix_memalign: 0000600002F4C800:256 @16
+2023/08/02 14:34:17 [debug] 67356#0: *1 recvmsg: 127.0.0.1:57552 fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:34:17 [debug] 67356#0: add cleanup: 0000600002F4C7E8
+2023/08/02 14:34:17 [debug] 67356#0: posix_memalign: 0000600002F4C900:256 @16
+2023/08/02 14:34:17 [info] 67356#0: *1 udp client 127.0.0.1:57552 connected to 0.0.0.0:25156
+2023/08/02 14:34:17 [debug] 67356#0: *1 posix_memalign: 0000600002F4CA00:256 @16
+2023/08/02 14:34:17 [debug] 67356#0: *1 generic phase: 0
+2023/08/02 14:34:17 [debug] 67356#0: *1 generic phase: 1
+2023/08/02 14:34:17 [debug] 67356#0: *1 generic phase: 2
+2023/08/02 14:34:17 [debug] 67356#0: *1 generic phase: 3
+2023/08/02 14:34:17 [debug] 67356#0: *1 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:34:17 [info] 67356#0: *1 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:34:17 [debug] 67356#0: *1 event timer add: 5: 30000:1053310297
+2023/08/02 14:34:47 [debug] 67356#0: *1 event timer del: 5: 1053310297
+2023/08/02 14:34:47 [debug] 67356#0: *1 generic phase: 3
+2023/08/02 14:34:47 [info] 67356#0: *1 [probe][5]recyle stream session:1297241171 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:34:47 [debug] 67356#0: *1 finalize stream session: 200
+2023/08/02 14:34:47 [debug] 67356#0: *1 stream log handler
+2023/08/02 14:34:47 [debug] 67356#0: *1 close stream connection: 5
+2023/08/02 14:34:47 [debug] 67356#0: *1 reusable connection: 0
+2023/08/02 14:34:47 [debug] 67356#0: *1 run cleanup: 0000600002F4C7E8
+2023/08/02 14:34:47 [debug] 67356#0: *1 free: 0000600002F4C700, unused: 0
+2023/08/02 14:34:47 [debug] 67356#0: *1 free: 0000600002F4C800, unused: 71
+2023/08/02 14:34:47 [debug] 67356#0: *1 free: 0000600002F4C900, unused: 80
+2023/08/02 14:34:47 [debug] 67356#0: *1 free: 0000600002F4CA00, unused: 80
+2023/08/02 14:37:10 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 1
+2023/08/02 14:37:10 [debug] 67356#0: recvmsg() data:1 fd:5
+2023/08/02 14:37:10 [debug] 67356#0: posix_memalign: 0000600002F44000:256 @16
+2023/08/02 14:37:10 [debug] 67356#0: posix_memalign: 0000600002F44100:256 @16
+2023/08/02 14:37:10 [debug] 67356#0: *2 recvmsg: 127.0.0.1:57552 fd:5 n:1 connection:00007FAF8D0170E8
+2023/08/02 14:37:10 [debug] 67356#0: add cleanup: 0000600002F440D0
+2023/08/02 14:37:10 [debug] 67356#0: posix_memalign: 0000600002F44200:256 @16
+2023/08/02 14:37:10 [info] 67356#0: *2 udp client 127.0.0.1:57552 connected to 0.0.0.0:25156
+2023/08/02 14:37:10 [debug] 67356#0: *2 posix_memalign: 0000600002F44300:256 @16
+2023/08/02 14:37:10 [debug] 67356#0: *2 generic phase: 0
+2023/08/02 14:37:10 [debug] 67356#0: *2 generic phase: 1
+2023/08/02 14:37:10 [debug] 67356#0: *2 generic phase: 2
+2023/08/02 14:37:10 [debug] 67356#0: *2 generic phase: 3
+2023/08/02 14:37:10 [debug] 67356#0: *2 generic phase: 4
+2023/08/02 14:37:10 [debug] 67356#0: *2 proxy connection handler
+2023/08/02 14:37:10 [debug] 67356#0: *2 malloc: 00007FAF8D204080:432
+2023/08/02 14:37:10 [debug] 67356#0: *2 malloc: 00007FAF8E008200:16384
+2023/08/02 14:37:10 [debug] 67356#0: *2 get rr peer, try: 1
+2023/08/02 14:37:10 [debug] 67356#0: *2 dgram socket 6
+2023/08/02 14:37:10 [debug] 67356#0: *2 connect to 127.0.0.1:25157, fd:6 #3 connection:00007FAF8D0171D0
+2023/08/02 14:37:10 [debug] 67356#0: *2 kevent set event: 6: ft:-1 fl:0025
+2023/08/02 14:37:10 [debug] 67356#0: *2 connected
+2023/08/02 14:37:10 [debug] 67356#0: *2 proxy connect: 0
+2023/08/02 14:37:10 [info] 67356#0: *2 udp proxy 127.0.0.1:55330 connected to 127.0.0.1:25157
+2023/08/02 14:37:10 [debug] 67356#0: *2 malloc: 00007FAF8E00C200:16384
+2023/08/02 14:37:10 [debug] 67356#0: *2 stream proxy add preread buffer: 1
+2023/08/02 14:37:10 [debug] 67356#0: *2 posix_memalign: 0000600002F44400:256 @16
+2023/08/02 14:37:10 [debug] 67356#0: *2 write new buf t:1 f:0 0000600002F440C0, pos 0000600002F440C0, size: 1 file: 0, size: 0
+2023/08/02 14:37:10 [debug] 67356#0: *2 stream write filter: l:0 f:1 s:1
+2023/08/02 14:37:10 [debug] 67356#0: *2 ====sendmsg: 1 of 1 fd:6 connection:00007FAF8D0171D0
+2023/08/02 14:37:10 [debug] 67356#0: *2 stream write filter 0000000000000000
+2023/08/02 14:37:10 [debug] 67356#0: *2 event timer add: 5: 600000:1054053217
+2023/08/02 14:37:10 [debug] 67356#0: *2 recv: fd:6 -1 of 16384
+2023/08/02 14:37:10 [error] 67356#0: *2 recv() failed (61: Connection refused) while proxying and reading from upstream, udp client: 127.0.0.1, server: 0.0.0.0:25156, upstream: "127.0.0.1:25157", bytes from/to client:1/0, bytes from/to upstream:0/1
+2023/08/02 14:37:10 [debug] 67356#0: *2 write new buf t:0 f:0 0000600002F440C0, pos 00007FAF8E00C200, size: 0 file: 0, size: 0
+2023/08/02 14:37:10 [debug] 67356#0: *2 stream write filter: l:1 f:1 s:0
+2023/08/02 14:37:10 [debug] 67356#0: *2 ====sendmsg: 0 of 0 fd:5 connection:00007FAF8D0170E8
+2023/08/02 14:37:10 [debug] 67356#0: *2 stream write filter 0000000000000000
+2023/08/02 14:37:10 [debug] 67356#0: *2 event timer: 5, old: 1054053217, new: 1054053218
+2023/08/02 14:37:11 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 1
+2023/08/02 14:37:11 [debug] 67356#0: recvmsg() data:1 fd:5
+2023/08/02 14:37:11 [debug] 67356#0: *2 recvmsg: fd:5 n:1 connection:00007FAF8D0170E8
+2023/08/02 14:37:11 [debug] 67356#0: *2 write new buf t:1 f:0 0000600002F440C0, pos 00007FAF8E008200, size: 1 file: 0, size: 0
+2023/08/02 14:37:11 [debug] 67356#0: *2 stream write filter: l:0 f:1 s:1
+2023/08/02 14:37:11 [debug] 67356#0: *2 ====sendmsg: 1 of 1 fd:6 connection:00007FAF8D0171D0
+2023/08/02 14:37:11 [debug] 67356#0: *2 stream write filter 0000000000000000
+2023/08/02 14:37:11 [debug] 67356#0: *2 event timer del: 5: 1054053217
+2023/08/02 14:37:11 [debug] 67356#0: *2 event timer add: 5: 600000:1054053884
+2023/08/02 14:37:11 [debug] 67356#0: *2 event timer: 5, old: 1054053884, new: 1054053885
+2023/08/02 14:37:11 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 1
+2023/08/02 14:37:11 [debug] 67356#0: recvmsg() data:1 fd:5
+2023/08/02 14:37:11 [debug] 67356#0: *2 recvmsg: fd:5 n:1 connection:00007FAF8D0170E8
+2023/08/02 14:37:11 [debug] 67356#0: *2 write new buf t:1 f:0 0000600002F440C0, pos 00007FAF8E008200, size: 1 file: 0, size: 0
+2023/08/02 14:37:11 [debug] 67356#0: *2 stream write filter: l:0 f:1 s:1
+2023/08/02 14:37:11 [debug] 67356#0: *2 ====sendmsg: -1 of 1 fd:6 connection:00007FAF8D0171D0
+2023/08/02 14:37:11 [error] 67356#0: *2 sendmsg() failed (61: Connection refused) while proxying and sending to upstream, udp client: 127.0.0.1, server: 0.0.0.0:25156, upstream: "127.0.0.1:25157", bytes from/to client:3/0, bytes from/to upstream:0/2
+2023/08/02 14:37:11 [debug] 67356#0: *2 stream write filter FFFFFFFFFFFFFFFF
+2023/08/02 14:37:11 [debug] 67356#0: *2 finalize stream proxy: 200
+2023/08/02 14:37:11 [debug] 67356#0: *2 free rr peer 1 4
+2023/08/02 14:37:11 [debug] 67356#0: *2 close stream proxy upstream connection: 6
+2023/08/02 14:37:11 [debug] 67356#0: *2 ngx_kqueue_del_event event: -1 fd:6 fl:8000
+2023/08/02 14:37:11 [debug] 67356#0: *2 reusable connection: 0
+2023/08/02 14:37:11 [debug] 67356#0: *2 finalize stream session: 200
+2023/08/02 14:37:11 [debug] 67356#0: *2 stream log handler
+2023/08/02 14:37:11 [debug] 67356#0: *2 close stream connection: 5
+2023/08/02 14:37:11 [debug] 67356#0: *2 event timer del: 5: 1054053884
+2023/08/02 14:37:11 [debug] 67356#0: *2 reusable connection: 0
+2023/08/02 14:37:11 [debug] 67356#0: *2 run cleanup: 0000600002F440D0
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 00007FAF8E00C200
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 00007FAF8E008200
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 00007FAF8D204080
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 0000600002F44000, unused: 8
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 0000600002F44100, unused: 0
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 0000600002F44200, unused: 8
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 0000600002F44300, unused: 16
+2023/08/02 14:37:11 [debug] 67356#0: *2 free: 0000600002F44400, unused: 144
+2023/08/02 14:37:13 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 1
+2023/08/02 14:37:13 [debug] 67356#0: recvmsg() data:1 fd:5
+2023/08/02 14:37:13 [debug] 67356#0: posix_memalign: 0000600002F40000:256 @16
+2023/08/02 14:37:13 [debug] 67356#0: posix_memalign: 0000600002F48000:256 @16
+2023/08/02 14:37:13 [debug] 67356#0: *4 recvmsg: 127.0.0.1:57552 fd:5 n:1 connection:00007FAF8D0170E8
+2023/08/02 14:37:13 [debug] 67356#0: add cleanup: 0000600002F400D0
+2023/08/02 14:37:13 [debug] 67356#0: posix_memalign: 0000600002F48100:256 @16
+2023/08/02 14:37:13 [info] 67356#0: *4 udp client 127.0.0.1:57552 connected to 0.0.0.0:25156
+2023/08/02 14:37:13 [debug] 67356#0: *4 posix_memalign: 0000600002F48200:256 @16
+2023/08/02 14:37:13 [debug] 67356#0: *4 generic phase: 0
+2023/08/02 14:37:13 [debug] 67356#0: *4 generic phase: 1
+2023/08/02 14:37:13 [debug] 67356#0: *4 generic phase: 2
+2023/08/02 14:37:13 [debug] 67356#0: *4 generic phase: 3
+2023/08/02 14:37:13 [debug] 67356#0: *4 generic phase: 4
+2023/08/02 14:37:13 [debug] 67356#0: *4 proxy connection handler
+2023/08/02 14:37:13 [debug] 67356#0: *4 malloc: 00007FAF8D104080:432
+2023/08/02 14:37:13 [debug] 67356#0: *4 malloc: 00007FAF8D80CE00:16384
+2023/08/02 14:37:13 [debug] 67356#0: *4 get rr peer, try: 1
+2023/08/02 14:37:13 [debug] 67356#0: *4 dgram socket 6
+2023/08/02 14:37:13 [debug] 67356#0: *4 connect to 127.0.0.1:25157, fd:6 #5 connection:00007FAF8D0171D0
+2023/08/02 14:37:13 [debug] 67356#0: *4 kevent set event: 6: ft:-1 fl:0025
+2023/08/02 14:37:13 [debug] 67356#0: *4 connected
+2023/08/02 14:37:13 [debug] 67356#0: *4 proxy connect: 0
+2023/08/02 14:37:13 [info] 67356#0: *4 udp proxy 127.0.0.1:53230 connected to 127.0.0.1:25157
+2023/08/02 14:37:13 [debug] 67356#0: *4 malloc: 00007FAF8D810E00:16384
+2023/08/02 14:37:13 [debug] 67356#0: *4 stream proxy add preread buffer: 1
+2023/08/02 14:37:13 [debug] 67356#0: *4 posix_memalign: 0000600002F48300:256 @16
+2023/08/02 14:37:13 [debug] 67356#0: *4 write new buf t:1 f:0 0000600002F400C0, pos 0000600002F400C0, size: 1 file: 0, size: 0
+2023/08/02 14:37:13 [debug] 67356#0: *4 stream write filter: l:0 f:1 s:1
+2023/08/02 14:37:13 [debug] 67356#0: *4 ====sendmsg: 1 of 1 fd:6 connection:00007FAF8D0171D0
+2023/08/02 14:37:13 [debug] 67356#0: *4 stream write filter 0000000000000000
+2023/08/02 14:37:13 [debug] 67356#0: *4 event timer add: 5: 600000:1054055735
+2023/08/02 14:37:13 [debug] 67356#0: *4 recv: fd:6 -1 of 16384
+2023/08/02 14:37:13 [error] 67356#0: *4 recv() failed (61: Connection refused) while proxying and reading from upstream, udp client: 127.0.0.1, server: 0.0.0.0:25156, upstream: "127.0.0.1:25157", bytes from/to client:1/0, bytes from/to upstream:0/1
+2023/08/02 14:37:13 [debug] 67356#0: *4 write new buf t:0 f:0 0000600002F400C0, pos 00007FAF8D810E00, size: 0 file: 0, size: 0
+2023/08/02 14:37:13 [debug] 67356#0: *4 stream write filter: l:1 f:1 s:0
+2023/08/02 14:37:13 [debug] 67356#0: *4 ====sendmsg: 0 of 0 fd:5 connection:00007FAF8D0170E8
+2023/08/02 14:37:13 [debug] 67356#0: *4 stream write filter 0000000000000000
+2023/08/02 14:37:13 [debug] 67356#0: *4 event timer: 5, old: 1054055735, new: 1054055735
+2023/08/02 14:37:16 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 1
+2023/08/02 14:37:16 [debug] 67356#0: recvmsg() data:1 fd:5
+2023/08/02 14:37:16 [debug] 67356#0: *4 recvmsg: fd:5 n:1 connection:00007FAF8D0170E8
+2023/08/02 14:37:16 [debug] 67356#0: *4 write new buf t:1 f:0 0000600002F400C0, pos 00007FAF8D80CE00, size: 1 file: 0, size: 0
+2023/08/02 14:37:16 [debug] 67356#0: *4 stream write filter: l:0 f:1 s:1
+2023/08/02 14:37:16 [debug] 67356#0: *4 ====sendmsg: 1 of 1 fd:6 connection:00007FAF8D0171D0
+2023/08/02 14:37:16 [debug] 67356#0: *4 stream write filter 0000000000000000
+2023/08/02 14:37:16 [debug] 67356#0: *4 event timer del: 5: 1054055735
+2023/08/02 14:37:16 [debug] 67356#0: *4 event timer add: 5: 600000:1054058934
+2023/08/02 14:37:16 [debug] 67356#0: *4 event timer: 5, old: 1054058934, new: 1054058934
+2023/08/02 14:37:20 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:37:20 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:37:20 [debug] 67356#0: *4 recvmsg: fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:37:20 [debug] 67356#0: *4 write new buf t:1 f:0 0000600002F400C0, pos 00007FAF8D80CE00, size: 24 file: 0, size: 0
+2023/08/02 14:37:20 [debug] 67356#0: *4 stream write filter: l:0 f:1 s:24
+2023/08/02 14:37:20 [debug] 67356#0: *4 ====sendmsg: -1 of 24 fd:6 connection:00007FAF8D0171D0
+2023/08/02 14:37:20 [error] 67356#0: *4 sendmsg() failed (61: Connection refused) while proxying and sending to upstream, udp client: 127.0.0.1, server: 0.0.0.0:25156, upstream: "127.0.0.1:25157", bytes from/to client:26/0, bytes from/to upstream:0/2
+2023/08/02 14:37:20 [debug] 67356#0: *4 stream write filter FFFFFFFFFFFFFFFF
+2023/08/02 14:37:20 [debug] 67356#0: *4 finalize stream proxy: 200
+2023/08/02 14:37:20 [debug] 67356#0: *4 free rr peer 1 4
+2023/08/02 14:37:20 [debug] 67356#0: *4 close stream proxy upstream connection: 6
+2023/08/02 14:37:20 [debug] 67356#0: *4 ngx_kqueue_del_event event: -1 fd:6 fl:8000
+2023/08/02 14:37:20 [debug] 67356#0: *4 reusable connection: 0
+2023/08/02 14:37:20 [debug] 67356#0: *4 finalize stream session: 200
+2023/08/02 14:37:20 [debug] 67356#0: *4 stream log handler
+2023/08/02 14:37:20 [debug] 67356#0: *4 close stream connection: 5
+2023/08/02 14:37:20 [debug] 67356#0: *4 event timer del: 5: 1054058934
+2023/08/02 14:37:20 [debug] 67356#0: *4 reusable connection: 0
+2023/08/02 14:37:20 [debug] 67356#0: *4 run cleanup: 0000600002F400D0
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 00007FAF8D810E00
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 00007FAF8D80CE00
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 00007FAF8D104080
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 0000600002F40000, unused: 8
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 0000600002F48000, unused: 0
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 0000600002F48100, unused: 8
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 0000600002F48200, unused: 16
+2023/08/02 14:37:20 [debug] 67356#0: *4 free: 0000600002F48300, unused: 144
+2023/08/02 14:37:21 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:37:21 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:37:21 [debug] 67356#0: posix_memalign: 0000600002F40000:256 @16
+2023/08/02 14:37:21 [debug] 67356#0: posix_memalign: 0000600002F40100:256 @16
+2023/08/02 14:37:21 [debug] 67356#0: *6 recvmsg: 127.0.0.1:57552 fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:37:21 [debug] 67356#0: add cleanup: 0000600002F400E8
+2023/08/02 14:37:21 [debug] 67356#0: posix_memalign: 0000600002F40200:256 @16
+2023/08/02 14:37:21 [info] 67356#0: *6 udp client 127.0.0.1:57552 connected to 0.0.0.0:25156
+2023/08/02 14:37:21 [debug] 67356#0: *6 posix_memalign: 0000600002F40300:256 @16
+2023/08/02 14:37:21 [debug] 67356#0: *6 generic phase: 0
+2023/08/02 14:37:21 [debug] 67356#0: *6 generic phase: 1
+2023/08/02 14:37:21 [debug] 67356#0: *6 generic phase: 2
+2023/08/02 14:37:21 [debug] 67356#0: *6 generic phase: 3
+2023/08/02 14:37:21 [debug] 67356#0: *6 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:37:21 [info] 67356#0: *6 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:37:21 [debug] 67356#0: *6 event timer add: 5: 30000:1053494567
+2023/08/02 14:37:23 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:37:23 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:37:23 [debug] 67356#0: *6 recvmsg: fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:37:23 [debug] 67356#0: *6 generic phase: 3
+2023/08/02 14:37:23 [debug] 67356#0: *6 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:37:23 [info] 67356#0: *6 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:37:23 [debug] 67356#0: *6 event timer del: 5: 1053494567
+2023/08/02 14:37:23 [debug] 67356#0: *6 event timer add: 5: 30000:1053495651
+2023/08/02 14:37:23 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:37:23 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:37:23 [debug] 67356#0: *6 recvmsg: fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:37:23 [debug] 67356#0: *6 generic phase: 3
+2023/08/02 14:37:23 [debug] 67356#0: *6 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:37:23 [info] 67356#0: *6 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:37:23 [debug] 67356#0: *6 event timer del: 5: 1053495651
+2023/08/02 14:37:23 [debug] 67356#0: *6 event timer add: 5: 30000:1053496451
+2023/08/02 14:37:24 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:37:24 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:37:24 [debug] 67356#0: *6 recvmsg: fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:37:24 [debug] 67356#0: *6 generic phase: 3
+2023/08/02 14:37:24 [debug] 67356#0: *6 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:37:24 [info] 67356#0: *6 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:37:24 [debug] 67356#0: *6 event timer del: 5: 1053496451
+2023/08/02 14:37:24 [debug] 67356#0: *6 event timer add: 5: 30000:1053497084
+2023/08/02 14:37:25 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:37:25 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:37:25 [debug] 67356#0: *6 recvmsg: fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:37:25 [debug] 67356#0: *6 generic phase: 3
+2023/08/02 14:37:25 [debug] 67356#0: *6 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:37:25 [info] 67356#0: *6 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:37:25 [debug] 67356#0: *6 event timer del: 5: 1053497084
+2023/08/02 14:37:25 [debug] 67356#0: *6 event timer add: 5: 30000:1053497734
+2023/08/02 14:37:25 [debug] 67356#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:37:25 [debug] 67356#0: recvmsg() data:24 fd:5
+2023/08/02 14:37:25 [debug] 67356#0: *6 recvmsg: fd:5 n:24 connection:00007FAF8D0170E8
+2023/08/02 14:37:25 [debug] 67356#0: *6 generic phase: 3
+2023/08/02 14:37:25 [debug] 67356#0: *6 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:37:25 [info] 67356#0: *6 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:37:25 [debug] 67356#0: *6 event timer del: 5: 1053497734
+2023/08/02 14:37:25 [debug] 67356#0: *6 event timer add: 5: 30000:1053498284
+2023/08/02 14:37:55 [debug] 67356#0: *6 event timer del: 5: 1053498284
+2023/08/02 14:37:55 [debug] 67356#0: *6 generic phase: 3
+2023/08/02 14:37:55 [info] 67356#0: *6 [probe][5]recyle stream session:1297241171 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:37:55 [debug] 67356#0: *6 finalize stream session: 200
+2023/08/02 14:37:55 [debug] 67356#0: *6 stream log handler
+2023/08/02 14:37:55 [debug] 67356#0: *6 close stream connection: 5
+2023/08/02 14:37:55 [debug] 67356#0: *6 reusable connection: 0
+2023/08/02 14:37:55 [debug] 67356#0: *6 run cleanup: 0000600002F400E8
+2023/08/02 14:37:55 [debug] 67356#0: *6 free: 0000600002F40000, unused: 0
+2023/08/02 14:37:55 [debug] 67356#0: *6 free: 0000600002F40100, unused: 23
+2023/08/02 14:37:55 [debug] 67356#0: *6 free: 0000600002F40200, unused: 15
+2023/08/02 14:37:55 [debug] 67356#0: *6 free: 0000600002F40300, unused: 80
+2023/08/02 14:41:17 [notice] 67356#0: signal 2 (SIGINT) received from 16005, exiting
+2023/08/02 14:41:17 [notice] 67356#0: exit
+2023/08/02 14:41:17 [debug] 67356#0: ngx_kqueue_del_event event: -1 fd:5 fl:8000
+2023/08/02 14:41:28 [notice] 67661#0: using the "kqueue" event method
+2023/08/02 14:41:28 [notice] 67661#0: nginx/1.22.0
+2023/08/02 14:41:28 [notice] 67661#0: built by clang 14.0.0 (clang-1400.0.29.202)
+2023/08/02 14:41:28 [notice] 67661#0: OS: Darwin 22.5.0
+2023/08/02 14:41:28 [notice] 67661#0: hw.ncpu: 16
+2023/08/02 14:41:28 [notice] 67661#0: net.inet.tcp.sendspace: 131072
+2023/08/02 14:41:28 [notice] 67661#0: kern.ipc.somaxconn: 128
+2023/08/02 14:41:28 [notice] 67661#0: getrlimit(RLIMIT_NOFILE): 2560:9223372036854775807
+2023/08/02 14:41:28 [debug] 67661#0: kevent set event: 5: ft:-1 fl:0005
+2023/08/02 14:42:41 [debug] 67661#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:42:41 [debug] 67661#0: recvmsg() data:24 fd:5
+2023/08/02 14:42:41 [debug] 67661#0: posix_memalign: 0000600001650000:256 @16
+2023/08/02 14:42:41 [debug] 67661#0: posix_memalign: 0000600001650100:256 @16
+2023/08/02 14:42:41 [debug] 67661#0: *1 recvmsg: 127.0.0.1:52861 fd:5 n:24 connection:00007FC21F0170E8
+2023/08/02 14:42:41 [debug] 67661#0: add cleanup: 00006000016500E8
+2023/08/02 14:42:41 [debug] 67661#0: posix_memalign: 0000600001650200:256 @16
+2023/08/02 14:42:41 [info] 67661#0: *1 udp client 127.0.0.1:52861 connected to 0.0.0.0:25156
+2023/08/02 14:42:41 [debug] 67661#0: *1 posix_memalign: 0000600001650300:256 @16
+2023/08/02 14:42:41 [debug] 67661#0: *1 generic phase: 0
+2023/08/02 14:42:41 [debug] 67661#0: *1 generic phase: 1
+2023/08/02 14:42:41 [debug] 67661#0: *1 generic phase: 2
+2023/08/02 14:42:41 [debug] 67661#0: *1 generic phase: 3
+2023/08/02 14:42:41 [debug] 67661#0: *1 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:42:41 [info] 67661#0: *1 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:42:41 [debug] 67661#0: *1 generic phase: 4
+2023/08/02 14:42:41 [debug] 67661#0: *1 proxy connection handler
+2023/08/02 14:42:41 [debug] 67661#0: *1 malloc: 00007FC21F304080:432
+2023/08/02 14:42:41 [debug] 67661#0: *1 malloc: 00007FC220808200:16384
+2023/08/02 14:42:41 [debug] 67661#0: *1 get rr peer, try: 1
+2023/08/02 14:42:41 [debug] 67661#0: *1 dgram socket 6
+2023/08/02 14:42:41 [debug] 67661#0: *1 connect to 127.0.0.1:25157, fd:6 #2 connection:00007FC21F0171D0
+2023/08/02 14:42:41 [debug] 67661#0: *1 kevent set event: 6: ft:-1 fl:0025
+2023/08/02 14:42:41 [debug] 67661#0: *1 connected
+2023/08/02 14:42:41 [debug] 67661#0: *1 proxy connect: 0
+2023/08/02 14:42:41 [info] 67661#0: *1 udp proxy 127.0.0.1:54655 connected to 127.0.0.1:25157
+2023/08/02 14:42:41 [debug] 67661#0: *1 malloc: 00007FC22080C200:16384
+2023/08/02 14:42:41 [debug] 67661#0: *1 stream proxy add preread buffer: 24
+2023/08/02 14:42:41 [debug] 67661#0: *1 posix_memalign: 0000600001654000:256 @16
+2023/08/02 14:42:41 [debug] 67661#0: *1 write new buf t:1 f:0 00006000016500C0, pos 00006000016500C0, size: 24 file: 0, size: 0
+2023/08/02 14:42:41 [debug] 67661#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:42:41 [debug] 67661#0: *1 ====sendmsg: 24 of 24 fd:6 connection:00007FC21F0171D0
+2023/08/02 14:42:41 [debug] 67661#0: *1 stream write filter 0000000000000000
+2023/08/02 14:42:41 [debug] 67661#0: *1 event timer add: 5: 600000:1054384444
+2023/08/02 14:42:41 [debug] 67661#0: *1 recv: fd:6 24 of 16384
+2023/08/02 14:42:41 [debug] 67661#0: *1 write new buf t:1 f:0 00006000016500C0, pos 00007FC22080C200, size: 24 file: 0, size: 0
+2023/08/02 14:42:41 [debug] 67661#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:42:41 [debug] 67661#0: *1 ====sendmsg: 24 of 24 fd:5 connection:00007FC21F0170E8
+2023/08/02 14:42:41 [debug] 67661#0: *1 stream write filter 0000000000000000
+2023/08/02 14:42:41 [debug] 67661#0: *1 event timer: 5, old: 1054384444, new: 1054384445
+2023/08/02 14:43:01 [debug] 67661#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:43:01 [debug] 67661#0: recvmsg() data:24 fd:5
+2023/08/02 14:43:01 [debug] 67661#0: *1 recvmsg: fd:5 n:24 connection:00007FC21F0170E8
+2023/08/02 14:43:01 [debug] 67661#0: *1 write new buf t:1 f:0 00006000016500C0, pos 00007FC220808200, size: 24 file: 0, size: 0
+2023/08/02 14:43:01 [debug] 67661#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:43:01 [debug] 67661#0: *1 ====sendmsg: 24 of 24 fd:6 connection:00007FC21F0171D0
+2023/08/02 14:43:01 [debug] 67661#0: *1 stream write filter 0000000000000000
+2023/08/02 14:43:01 [debug] 67661#0: *1 event timer del: 5: 1054384444
+2023/08/02 14:43:01 [debug] 67661#0: *1 event timer add: 5: 600000:1054404077
+2023/08/02 14:43:01 [debug] 67661#0: *1 recv: fd:6 24 of 16384
+2023/08/02 14:43:01 [debug] 67661#0: *1 write new buf t:1 f:0 00006000016500C0, pos 00007FC22080C200, size: 24 file: 0, size: 0
+2023/08/02 14:43:01 [debug] 67661#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:43:01 [debug] 67661#0: *1 ====sendmsg: 24 of 24 fd:5 connection:00007FC21F0170E8
+2023/08/02 14:43:01 [debug] 67661#0: *1 stream write filter 0000000000000000
+2023/08/02 14:43:01 [debug] 67661#0: *1 event timer: 5, old: 1054404077, new: 1054404077
+2023/08/02 14:44:51 [notice] 67661#0: signal 2 (SIGINT) received from 16005, exiting
+2023/08/02 14:44:51 [notice] 67661#0: exit
+2023/08/02 14:44:51 [debug] 67661#0: ngx_kqueue_del_event event: -1 fd:5 fl:8000
+2023/08/02 14:45:05 [notice] 68052#0: using the "kqueue" event method
+2023/08/02 14:45:05 [notice] 68052#0: nginx/1.22.0
+2023/08/02 14:45:05 [notice] 68052#0: built by clang 14.0.0 (clang-1400.0.29.202)
+2023/08/02 14:45:05 [notice] 68052#0: OS: Darwin 22.5.0
+2023/08/02 14:45:05 [notice] 68052#0: hw.ncpu: 16
+2023/08/02 14:45:05 [notice] 68052#0: net.inet.tcp.sendspace: 131072
+2023/08/02 14:45:05 [notice] 68052#0: kern.ipc.somaxconn: 128
+2023/08/02 14:45:05 [notice] 68052#0: getrlimit(RLIMIT_NOFILE): 2560:9223372036854775807
+2023/08/02 14:45:05 [debug] 68052#0: kevent set event: 5: ft:-1 fl:0005
+2023/08/02 14:45:20 [debug] 68052#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:45:20 [debug] 68052#0: recvmsg() data:24 fd:5
+2023/08/02 14:45:20 [debug] 68052#0: posix_memalign: 0000600003058000:256 @16
+2023/08/02 14:45:20 [debug] 68052#0: posix_memalign: 0000600003058100:256 @16
+2023/08/02 14:45:20 [debug] 68052#0: *1 recvmsg: 127.0.0.1:64031 fd:5 n:24 connection:00007F872D0170E8
+2023/08/02 14:45:20 [debug] 68052#0: add cleanup: 00006000030580E8
+2023/08/02 14:45:20 [debug] 68052#0: posix_memalign: 0000600003058200:256 @16
+2023/08/02 14:45:20 [info] 68052#0: *1 udp client 127.0.0.1:64031 connected to 0.0.0.0:25156
+2023/08/02 14:45:20 [debug] 68052#0: *1 posix_memalign: 0000600003058300:256 @16
+2023/08/02 14:45:20 [debug] 68052#0: *1 generic phase: 0
+2023/08/02 14:45:20 [debug] 68052#0: *1 generic phase: 1
+2023/08/02 14:45:20 [debug] 68052#0: *1 generic phase: 2
+2023/08/02 14:45:20 [debug] 68052#0: *1 generic phase: 3
+2023/08/02 14:45:20 [debug] 68052#0: *1 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:45:20 [info] 68052#0: *1 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:45:20 [debug] 68052#0: *1 generic phase: 4
+2023/08/02 14:45:20 [debug] 68052#0: *1 proxy connection handler
+2023/08/02 14:45:20 [debug] 68052#0: *1 malloc: 00007F872D304080:432
+2023/08/02 14:45:20 [debug] 68052#0: *1 malloc: 00007F872D085000:131072
+2023/08/02 14:45:20 [debug] 68052#0: *1 get rr peer, try: 1
+2023/08/02 14:45:20 [debug] 68052#0: *1 dgram socket 6
+2023/08/02 14:45:20 [debug] 68052#0: *1 connect to 127.0.0.1:25157, fd:6 #2 connection:00007F872D0171D0
+2023/08/02 14:45:20 [debug] 68052#0: *1 kevent set event: 6: ft:-1 fl:0025
+2023/08/02 14:45:20 [debug] 68052#0: *1 connected
+2023/08/02 14:45:20 [debug] 68052#0: *1 proxy connect: 0
+2023/08/02 14:45:20 [debug] 68052#0: *1 posix_memalign: 0000600003044000:256 @16
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL_get_error: 2
+2023/08/02 14:45:20 [debug] 68052#0: *1 event timer add: 6: 60000:1054002998
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL handshake handler: 0
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL_get_error: 2
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL handshake handler: 0
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL_get_error: 2
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL handshake handler: 0
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL: DTLSv1.2, cipher: "SEED-SHA SSLv3 Kx=RSA Au=RSA Enc=SEED(128) Mac=SHA1"
+2023/08/02 14:45:20 [debug] 68052#0: *1 event timer del: 6: 1054002998
+2023/08/02 14:45:20 [debug] 68052#0: *1 malloc: 00007F872D0A5000:131072
+2023/08/02 14:45:20 [info] 68052#0: *1 udp proxy 127.0.0.1:56827 connected to 127.0.0.1:25157
+2023/08/02 14:45:20 [debug] 68052#0: *1 malloc: 00007F872D0C5000:131072
+2023/08/02 14:45:20 [debug] 68052#0: *1 stream proxy add preread buffer: 24
+2023/08/02 14:45:20 [debug] 68052#0: *1 post event 00007F872D0510D0
+2023/08/02 14:45:20 [debug] 68052#0: *1 write new buf t:1 f:0 00006000030580C0, pos 00006000030580C0, size: 24 file: 0, size: 0
+2023/08/02 14:45:20 [debug] 68052#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:45:20 [debug] 68052#0: *1 posix_memalign: 0000600003050200:256 @16
+2023/08/02 14:45:20 [debug] 68052#0: *1 malloc: 00007F872D811800:16384
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL buf copy: 24
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL_write: 24 connection:00007F872D0171D0
+2023/08/02 14:45:20 [debug] 68052#0: *1 stream write filter 0000000000000000
+2023/08/02 14:45:20 [debug] 68052#0: *1 event timer add: 5: 50000:1053993001
+2023/08/02 14:45:20 [debug] 68052#0: *1 delete posted event 00007F872D0510D0
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL_read: -1 connection:00007F872D0171D0
+2023/08/02 14:45:20 [debug] 68052#0: *1 SSL_get_error: 2
+2023/08/02 14:45:20 [debug] 68052#0: *1 event timer: 5, old: 1053993001, new: 1053993001
+2023/08/02 14:45:40 [debug] 68052#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:45:40 [debug] 68052#0: recvmsg() data:24 fd:5
+2023/08/02 14:45:40 [debug] 68052#0: posix_memalign: 000060000305C200:256 @16
+2023/08/02 14:45:40 [debug] 68052#0: posix_memalign: 000060000305C300:256 @16
+2023/08/02 14:45:40 [debug] 68052#0: *3 recvmsg: 127.0.0.1:58399 fd:5 n:24 connection:00007F872D0172B8
+2023/08/02 14:45:40 [debug] 68052#0: add cleanup: 000060000305C2E8
+2023/08/02 14:45:40 [debug] 68052#0: posix_memalign: 000060000305C400:256 @16
+2023/08/02 14:45:40 [info] 68052#0: *3 udp client 127.0.0.1:58399 connected to 0.0.0.0:25156
+2023/08/02 14:45:40 [debug] 68052#0: *3 posix_memalign: 000060000305C500:256 @16
+2023/08/02 14:45:40 [debug] 68052#0: *3 generic phase: 0
+2023/08/02 14:45:40 [debug] 68052#0: *3 generic phase: 1
+2023/08/02 14:45:40 [debug] 68052#0: *3 generic phase: 2
+2023/08/02 14:45:40 [debug] 68052#0: *3 generic phase: 3
+2023/08/02 14:45:40 [debug] 68052#0: *3 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:45:40 [info] 68052#0: *3 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:45:40 [debug] 68052#0: *3 generic phase: 4
+2023/08/02 14:45:40 [debug] 68052#0: *3 proxy connection handler
+2023/08/02 14:45:40 [debug] 68052#0: *3 malloc: 00007F872D204080:432
+2023/08/02 14:45:40 [debug] 68052#0: *3 malloc: 00007F872D400000:131072
+2023/08/02 14:45:40 [debug] 68052#0: *3 get rr peer, try: 1
+2023/08/02 14:45:40 [debug] 68052#0: *3 dgram socket 7
+2023/08/02 14:45:40 [debug] 68052#0: *3 connect to 127.0.0.1:25157, fd:7 #4 connection:00007F872D0173A0
+2023/08/02 14:45:40 [debug] 68052#0: *3 kevent set event: 7: ft:-1 fl:0025
+2023/08/02 14:45:40 [debug] 68052#0: *3 connected
+2023/08/02 14:45:40 [debug] 68052#0: *3 proxy connect: 0
+2023/08/02 14:45:40 [debug] 68052#0: *3 posix_memalign: 000060000305C600:256 @16
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL_get_error: 2
+2023/08/02 14:45:40 [debug] 68052#0: *3 event timer add: 7: 60000:1054022832
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL handshake handler: 0
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL_get_error: 2
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL handshake handler: 0
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL_get_error: 2
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL handshake handler: 0
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL: DTLSv1.2, cipher: "SEED-SHA SSLv3 Kx=RSA Au=RSA Enc=SEED(128) Mac=SHA1"
+2023/08/02 14:45:40 [debug] 68052#0: *3 event timer del: 7: 1054022832
+2023/08/02 14:45:40 [debug] 68052#0: *3 malloc: 00007F872D420000:131072
+2023/08/02 14:45:40 [info] 68052#0: *3 udp proxy 127.0.0.1:56692 connected to 127.0.0.1:25157
+2023/08/02 14:45:40 [debug] 68052#0: *3 malloc: 00007F872D440000:131072
+2023/08/02 14:45:40 [debug] 68052#0: *3 stream proxy add preread buffer: 24
+2023/08/02 14:45:40 [debug] 68052#0: *3 post event 00007F872D0511A0
+2023/08/02 14:45:40 [debug] 68052#0: *3 write new buf t:1 f:0 000060000305C2C0, pos 000060000305C2C0, size: 24 file: 0, size: 0
+2023/08/02 14:45:40 [debug] 68052#0: *3 stream write filter: l:0 f:1 s:24
+2023/08/02 14:45:40 [debug] 68052#0: *3 posix_memalign: 0000600003050300:256 @16
+2023/08/02 14:45:40 [debug] 68052#0: *3 malloc: 00007F872D821600:16384
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL buf copy: 24
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL_write: 24 connection:00007F872D0173A0
+2023/08/02 14:45:40 [debug] 68052#0: *3 stream write filter 0000000000000000
+2023/08/02 14:45:40 [debug] 68052#0: *3 event timer add: 5: 50000:1054012835
+2023/08/02 14:45:40 [debug] 68052#0: *3 delete posted event 00007F872D0511A0
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL_read: -1 connection:00007F872D0173A0
+2023/08/02 14:45:40 [debug] 68052#0: *3 SSL_get_error: 2
+2023/08/02 14:45:40 [debug] 68052#0: *3 event timer: 5, old: 1054012835, new: 1054012835
+2023/08/02 14:46:10 [debug] 68052#0: *1 event timer del: 5: 1053993001
+2023/08/02 14:46:10 [info] 68052#0: *1 udp timed out, packets from/to client:1/0, bytes from/to client:24/24, bytes from/to upstream:0/24
+2023/08/02 14:46:10 [debug] 68052#0: *1 finalize stream proxy: 200
+2023/08/02 14:46:10 [debug] 68052#0: *1 free rr peer 1 0
+2023/08/02 14:46:10 [debug] 68052#0: *1 close stream proxy upstream connection: 6
+2023/08/02 14:46:10 [debug] 68052#0: *1 SSL_shutdown: 1
+2023/08/02 14:46:10 [debug] 68052#0: *1 ngx_kqueue_del_event event: -1 fd:6 fl:8000
+2023/08/02 14:46:10 [debug] 68052#0: *1 reusable connection: 0
+2023/08/02 14:46:10 [debug] 68052#0: *1 finalize stream session: 200
+2023/08/02 14:46:10 [debug] 68052#0: *1 stream log handler
+2023/08/02 14:46:10 [debug] 68052#0: *1 close stream connection: 5
+2023/08/02 14:46:10 [debug] 68052#0: *1 reusable connection: 0
+2023/08/02 14:46:10 [debug] 68052#0: *1 run cleanup: 00006000030580E8
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 00007F872D811800
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 00007F872D0C5000
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 00007F872D0A5000
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 00007F872D085000
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 00007F872D304080
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 0000600003058000, unused: 0
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 0000600003058100, unused: 8
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 0000600003058200, unused: 0
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 0000600003058300, unused: 8
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 0000600003044000, unused: 0
+2023/08/02 14:46:10 [debug] 68052#0: *1 free: 0000600003050200, unused: 128
+2023/08/02 14:46:30 [debug] 68052#0: *3 SSL_read: 0 connection:00007F872D0173A0
+2023/08/02 14:46:30 [debug] 68052#0: *3 SSL_get_error: 6
+2023/08/02 14:46:30 [debug] 68052#0: *3 peer shutdown SSL cleanly
+2023/08/02 14:46:30 [debug] 68052#0: *3 write new buf t:0 f:0 000060000305C2C0, pos 00007F872D440000, size: 0 file: 0, size: 0
+2023/08/02 14:46:30 [debug] 68052#0: *3 stream write filter: l:1 f:1 s:0
+2023/08/02 14:46:30 [debug] 68052#0: *3 ====sendmsg: 0 of 0 fd:5 connection:00007F872D0172B8
+2023/08/02 14:46:30 [debug] 68052#0: *3 stream write filter 0000000000000000
+2023/08/02 14:46:30 [debug] 68052#0: *3 event timer del: 5: 1054012835
+2023/08/02 14:46:30 [debug] 68052#0: *3 event timer add: 5: 50000:1054062835
+2023/08/02 14:47:20 [debug] 68052#0: *3 event timer del: 5: 1054062835
+2023/08/02 14:47:20 [info] 68052#0: *3 udp timed out, packets from/to client:1/1, bytes from/to client:24/24, bytes from/to upstream:0/24
+2023/08/02 14:47:20 [debug] 68052#0: *3 finalize stream proxy: 200
+2023/08/02 14:47:20 [debug] 68052#0: *3 free rr peer 1 0
+2023/08/02 14:47:20 [debug] 68052#0: *3 close stream proxy upstream connection: 7
+2023/08/02 14:47:20 [debug] 68052#0: *3 SSL_shutdown: 1
+2023/08/02 14:47:20 [debug] 68052#0: *3 ngx_kqueue_del_event event: -1 fd:7 fl:8000
+2023/08/02 14:47:20 [debug] 68052#0: *3 reusable connection: 0
+2023/08/02 14:47:20 [debug] 68052#0: *3 finalize stream session: 200
+2023/08/02 14:47:20 [debug] 68052#0: *3 stream log handler
+2023/08/02 14:47:20 [debug] 68052#0: *3 close stream connection: 5
+2023/08/02 14:47:20 [debug] 68052#0: *3 reusable connection: 0
+2023/08/02 14:47:20 [debug] 68052#0: *3 run cleanup: 000060000305C2E8
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 00007F872D821600
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 00007F872D440000
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 00007F872D420000
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 00007F872D400000
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 00007F872D204080
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 000060000305C200, unused: 0
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 000060000305C300, unused: 8
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 000060000305C400, unused: 0
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 000060000305C500, unused: 8
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 000060000305C600, unused: 0
+2023/08/02 14:47:20 [debug] 68052#0: *3 free: 0000600003050300, unused: 128
+2023/08/02 14:47:54 [notice] 68052#0: signal 2 (SIGINT) received from 16005, exiting
+2023/08/02 14:47:54 [notice] 68052#0: exit
+2023/08/02 14:47:54 [debug] 68052#0: ngx_kqueue_del_event event: -1 fd:5 fl:8000
+2023/08/02 14:47:55 [notice] 68119#0: using the "kqueue" event method
+2023/08/02 14:47:55 [notice] 68119#0: nginx/1.22.0
+2023/08/02 14:47:55 [notice] 68119#0: built by clang 14.0.0 (clang-1400.0.29.202)
+2023/08/02 14:47:55 [notice] 68119#0: OS: Darwin 22.5.0
+2023/08/02 14:47:55 [notice] 68119#0: hw.ncpu: 16
+2023/08/02 14:47:55 [notice] 68119#0: net.inet.tcp.sendspace: 131072
+2023/08/02 14:47:55 [notice] 68119#0: kern.ipc.somaxconn: 128
+2023/08/02 14:47:55 [notice] 68119#0: getrlimit(RLIMIT_NOFILE): 2560:9223372036854775807
+2023/08/02 14:47:55 [debug] 68119#0: kevent set event: 5: ft:-1 fl:0005
+2023/08/02 14:48:08 [debug] 68119#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:48:08 [debug] 68119#0: recvmsg() data:24 fd:5
+2023/08/02 14:48:08 [debug] 68119#0: posix_memalign: 0000600000020700:256 @16
+2023/08/02 14:48:08 [debug] 68119#0: posix_memalign: 0000600000020800:256 @16
+2023/08/02 14:48:08 [debug] 68119#0: *1 recvmsg: 127.0.0.1:55443 fd:5 n:24 connection:00007FE2BE8170E8
+2023/08/02 14:48:08 [debug] 68119#0: add cleanup: 00006000000207E8
+2023/08/02 14:48:08 [debug] 68119#0: posix_memalign: 0000600000020900:256 @16
+2023/08/02 14:48:08 [info] 68119#0: *1 udp client 127.0.0.1:55443 connected to 0.0.0.0:25156
+2023/08/02 14:48:08 [debug] 68119#0: *1 posix_memalign: 0000600000020A00:256 @16
+2023/08/02 14:48:08 [debug] 68119#0: *1 generic phase: 0
+2023/08/02 14:48:08 [debug] 68119#0: *1 generic phase: 1
+2023/08/02 14:48:08 [debug] 68119#0: *1 generic phase: 2
+2023/08/02 14:48:08 [debug] 68119#0: *1 generic phase: 3
+2023/08/02 14:48:08 [debug] 68119#0: *1 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:48:08 [info] 68119#0: *1 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:48:08 [debug] 68119#0: *1 generic phase: 4
+2023/08/02 14:48:08 [debug] 68119#0: *1 proxy connection handler
+2023/08/02 14:48:08 [debug] 68119#0: *1 malloc: 00007FE2BEB04080:432
+2023/08/02 14:48:08 [debug] 68119#0: *1 malloc: 00007FE2BE885000:131072
+2023/08/02 14:48:08 [debug] 68119#0: *1 get rr peer, try: 1
+2023/08/02 14:48:08 [debug] 68119#0: *1 dgram socket 6
+2023/08/02 14:48:08 [debug] 68119#0: *1 connect to 127.0.0.1:25157, fd:6 #2 connection:00007FE2BE8171D0
+2023/08/02 14:48:08 [debug] 68119#0: *1 kevent set event: 6: ft:-1 fl:0025
+2023/08/02 14:48:08 [debug] 68119#0: *1 connected
+2023/08/02 14:48:08 [debug] 68119#0: *1 proxy connect: 0
+2023/08/02 14:48:08 [debug] 68119#0: *1 posix_memalign: 000060000002C000:256 @16
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:48:08 [debug] 68119#0: *1 event timer add: 6: 60000:1054170686
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL handshake handler: 0
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL handshake handler: 0
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL handshake handler: 0
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL: DTLSv1.2, cipher: "SEED-SHA SSLv3 Kx=RSA Au=RSA Enc=SEED(128) Mac=SHA1"
+2023/08/02 14:48:08 [debug] 68119#0: *1 event timer del: 6: 1054170686
+2023/08/02 14:48:08 [debug] 68119#0: *1 malloc: 00007FE2BE8A5000:131072
+2023/08/02 14:48:08 [info] 68119#0: *1 udp proxy 127.0.0.1:61274 connected to 127.0.0.1:25157
+2023/08/02 14:48:08 [debug] 68119#0: *1 malloc: 00007FE2BE8C5000:131072
+2023/08/02 14:48:08 [debug] 68119#0: *1 stream proxy add preread buffer: 24
+2023/08/02 14:48:08 [debug] 68119#0: *1 post event 00007FE2BE8510D0
+2023/08/02 14:48:08 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00006000000207C0, size: 24 file: 0, size: 0
+2023/08/02 14:48:08 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:48:08 [debug] 68119#0: *1 posix_memalign: 000060000002C100:256 @16
+2023/08/02 14:48:08 [debug] 68119#0: *1 malloc: 00007FE2C000A200:16384
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL buf copy: 24
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_write: 24 connection:00007FE2BE8171D0
+2023/08/02 14:48:08 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:48:08 [debug] 68119#0: *1 event timer add: 5: 50000:1054160689
+2023/08/02 14:48:08 [debug] 68119#0: *1 delete posted event 00007FE2BE8510D0
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_read: -1 connection:00007FE2BE8171D0
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:48:08 [debug] 68119#0: *1 event timer: 5, old: 1054160689, new: 1054160689
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_read: 24 connection:00007FE2BE8171D0
+2023/08/02 14:48:08 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00007FE2BE8C5000, size: 24 file: 0, size: 0
+2023/08/02 14:48:08 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:48:08 [debug] 68119#0: *1 ====sendmsg: 24 of 24 fd:5 connection:00007FE2BE8170E8
+2023/08/02 14:48:08 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_read: -1 connection:00007FE2BE8171D0
+2023/08/02 14:48:08 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:48:08 [debug] 68119#0: *1 event timer: 5, old: 1054160689, new: 1054160696
+2023/08/02 14:48:24 [debug] 68119#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:48:24 [debug] 68119#0: recvmsg() data:24 fd:5
+2023/08/02 14:48:24 [debug] 68119#0: *1 recvmsg: fd:5 n:24 connection:00007FE2BE8170E8
+2023/08/02 14:48:24 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00007FE2BE8A5000, size: 24 file: 0, size: 0
+2023/08/02 14:48:24 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:48:24 [debug] 68119#0: *1 SSL buf copy: 24
+2023/08/02 14:48:24 [debug] 68119#0: *1 SSL_write: 24 connection:00007FE2BE8171D0
+2023/08/02 14:48:24 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:48:24 [debug] 68119#0: *1 event timer del: 5: 1054160689
+2023/08/02 14:48:24 [debug] 68119#0: *1 event timer add: 5: 50000:1054177286
+2023/08/02 14:48:24 [debug] 68119#0: *1 SSL_read: 24 connection:00007FE2BE8171D0
+2023/08/02 14:48:24 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00007FE2BE8C5000, size: 24 file: 0, size: 0
+2023/08/02 14:48:24 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:48:24 [debug] 68119#0: *1 ====sendmsg: 24 of 24 fd:5 connection:00007FE2BE8170E8
+2023/08/02 14:48:24 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:48:24 [debug] 68119#0: *1 SSL_read: -1 connection:00007FE2BE8171D0
+2023/08/02 14:48:24 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:48:24 [debug] 68119#0: *1 event timer: 5, old: 1054177286, new: 1054177291
+2023/08/02 14:48:48 [debug] 68119#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:48:48 [debug] 68119#0: recvmsg() data:24 fd:5
+2023/08/02 14:48:48 [debug] 68119#0: *1 recvmsg: fd:5 n:24 connection:00007FE2BE8170E8
+2023/08/02 14:48:48 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00007FE2BE8A5000, size: 24 file: 0, size: 0
+2023/08/02 14:48:48 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:48:48 [debug] 68119#0: *1 SSL buf copy: 24
+2023/08/02 14:48:48 [debug] 68119#0: *1 SSL_write: 24 connection:00007FE2BE8171D0
+2023/08/02 14:48:48 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:48:48 [debug] 68119#0: *1 event timer del: 5: 1054177286
+2023/08/02 14:48:48 [debug] 68119#0: *1 event timer add: 5: 50000:1054200687
+2023/08/02 14:48:48 [debug] 68119#0: *1 SSL_read: 24 connection:00007FE2BE8171D0
+2023/08/02 14:48:48 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00007FE2BE8C5000, size: 24 file: 0, size: 0
+2023/08/02 14:48:48 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:48:48 [debug] 68119#0: *1 ====sendmsg: 24 of 24 fd:5 connection:00007FE2BE8170E8
+2023/08/02 14:48:48 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:48:48 [debug] 68119#0: *1 SSL_read: -1 connection:00007FE2BE8171D0
+2023/08/02 14:48:48 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:48:48 [debug] 68119#0: *1 event timer: 5, old: 1054200687, new: 1054200692
+2023/08/02 14:49:04 [debug] 68119#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:49:04 [debug] 68119#0: recvmsg() data:24 fd:5
+2023/08/02 14:49:04 [debug] 68119#0: *1 recvmsg: fd:5 n:24 connection:00007FE2BE8170E8
+2023/08/02 14:49:04 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00007FE2BE8A5000, size: 24 file: 0, size: 0
+2023/08/02 14:49:04 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:49:04 [debug] 68119#0: *1 SSL buf copy: 24
+2023/08/02 14:49:04 [debug] 68119#0: *1 SSL_write: 24 connection:00007FE2BE8171D0
+2023/08/02 14:49:04 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:49:04 [debug] 68119#0: *1 event timer del: 5: 1054200687
+2023/08/02 14:49:04 [debug] 68119#0: *1 event timer add: 5: 50000:1054217220
+2023/08/02 14:49:04 [debug] 68119#0: *1 SSL_read: 24 connection:00007FE2BE8171D0
+2023/08/02 14:49:04 [debug] 68119#0: *1 write new buf t:1 f:0 00006000000207C0, pos 00007FE2BE8C5000, size: 24 file: 0, size: 0
+2023/08/02 14:49:04 [debug] 68119#0: *1 stream write filter: l:0 f:1 s:24
+2023/08/02 14:49:04 [debug] 68119#0: *1 ====sendmsg: 24 of 24 fd:5 connection:00007FE2BE8170E8
+2023/08/02 14:49:04 [debug] 68119#0: *1 stream write filter 0000000000000000
+2023/08/02 14:49:04 [debug] 68119#0: *1 SSL_read: -1 connection:00007FE2BE8171D0
+2023/08/02 14:49:04 [debug] 68119#0: *1 SSL_get_error: 2
+2023/08/02 14:49:04 [debug] 68119#0: *1 event timer: 5, old: 1054217220, new: 1054217227
+2023/08/02 14:49:54 [debug] 68119#0: *1 event timer del: 5: 1054217220
+2023/08/02 14:49:54 [info] 68119#0: *1 udp timed out, packets from/to client:4/4, bytes from/to client:96/120, bytes from/to upstream:96/96
+2023/08/02 14:49:54 [debug] 68119#0: *1 finalize stream proxy: 200
+2023/08/02 14:49:54 [debug] 68119#0: *1 free rr peer 1 0
+2023/08/02 14:49:54 [debug] 68119#0: *1 close stream proxy upstream connection: 6
+2023/08/02 14:49:54 [debug] 68119#0: *1 SSL_shutdown: 1
+2023/08/02 14:49:54 [debug] 68119#0: *1 ngx_kqueue_del_event event: -1 fd:6 fl:8000
+2023/08/02 14:49:54 [debug] 68119#0: *1 reusable connection: 0
+2023/08/02 14:49:54 [debug] 68119#0: *1 finalize stream session: 200
+2023/08/02 14:49:54 [debug] 68119#0: *1 stream log handler
+2023/08/02 14:49:54 [debug] 68119#0: *1 close stream connection: 5
+2023/08/02 14:49:54 [debug] 68119#0: *1 reusable connection: 0
+2023/08/02 14:49:54 [debug] 68119#0: *1 run cleanup: 00006000000207E8
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 00007FE2C000A200
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 00007FE2BE8C5000
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 00007FE2BE8A5000
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 00007FE2BE885000
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 00007FE2BEB04080
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 0000600000020700, unused: 0
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 0000600000020800, unused: 8
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 0000600000020900, unused: 0
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 0000600000020A00, unused: 8
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 000060000002C000, unused: 0
+2023/08/02 14:49:54 [debug] 68119#0: *1 free: 000060000002C100, unused: 128
+2023/08/02 14:50:00 [debug] 68119#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:50:00 [debug] 68119#0: recvmsg() data:24 fd:5
+2023/08/02 14:50:00 [debug] 68119#0: posix_memalign: 0000600000020A00:256 @16
+2023/08/02 14:50:00 [debug] 68119#0: posix_memalign: 0000600000020900:256 @16
+2023/08/02 14:50:00 [debug] 68119#0: *3 recvmsg: 127.0.0.1:51178 fd:5 n:24 connection:00007FE2BE8170E8
+2023/08/02 14:50:00 [debug] 68119#0: add cleanup: 0000600000020AE8
+2023/08/02 14:50:00 [debug] 68119#0: posix_memalign: 0000600000020800:256 @16
+2023/08/02 14:50:00 [info] 68119#0: *3 udp client 127.0.0.1:51178 connected to 0.0.0.0:25156
+2023/08/02 14:50:00 [debug] 68119#0: *3 posix_memalign: 0000600000034000:256 @16
+2023/08/02 14:50:00 [debug] 68119#0: *3 generic phase: 0
+2023/08/02 14:50:00 [debug] 68119#0: *3 generic phase: 1
+2023/08/02 14:50:00 [debug] 68119#0: *3 generic phase: 2
+2023/08/02 14:50:00 [debug] 68119#0: *3 generic phase: 3
+2023/08/02 14:50:00 [debug] 68119#0: *3 sendto: fd:5 24 of 24 to "127.0.0.1"
+2023/08/02 14:50:00 [info] 68119#0: *3 [probe][asdfghjklqwertyu]process udp packet len:24 while initializing session, udp client: 127.0.0.1, server: 0.0.0.0:25156
+2023/08/02 14:50:00 [debug] 68119#0: *3 generic phase: 4
+2023/08/02 14:50:00 [debug] 68119#0: *3 proxy connection handler
+2023/08/02 14:50:00 [debug] 68119#0: *3 malloc: 00007FE2BED04080:432
+2023/08/02 14:50:00 [debug] 68119#0: *3 malloc: 00007FE2BE885000:131072
+2023/08/02 14:50:00 [debug] 68119#0: *3 get rr peer, try: 1
+2023/08/02 14:50:00 [debug] 68119#0: *3 dgram socket 6
+2023/08/02 14:50:00 [debug] 68119#0: *3 connect to 127.0.0.1:25157, fd:6 #4 connection:00007FE2BE8171D0
+2023/08/02 14:50:00 [debug] 68119#0: *3 kevent set event: 6: ft:-1 fl:0025
+2023/08/02 14:50:00 [debug] 68119#0: *3 connected
+2023/08/02 14:50:00 [debug] 68119#0: *3 proxy connect: 0
+2023/08/02 14:50:00 [debug] 68119#0: *3 posix_memalign: 0000600000034100:256 @16
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_get_error: 2
+2023/08/02 14:50:00 [debug] 68119#0: *3 event timer add: 6: 60000:1054283056
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL handshake handler: 0
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_get_error: 2
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL handshake handler: 0
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_get_error: 2
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL handshake handler: 0
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL: DTLSv1.2, cipher: "SEED-SHA SSLv3 Kx=RSA Au=RSA Enc=SEED(128) Mac=SHA1"
+2023/08/02 14:50:00 [debug] 68119#0: *3 event timer del: 6: 1054283056
+2023/08/02 14:50:00 [debug] 68119#0: *3 malloc: 00007FE2BE8A5000:131072
+2023/08/02 14:50:00 [info] 68119#0: *3 udp proxy 127.0.0.1:60728 connected to 127.0.0.1:25157
+2023/08/02 14:50:00 [debug] 68119#0: *3 malloc: 00007FE2BE8C5000:131072
+2023/08/02 14:50:00 [debug] 68119#0: *3 stream proxy add preread buffer: 24
+2023/08/02 14:50:00 [debug] 68119#0: *3 post event 00007FE2BE8510D0
+2023/08/02 14:50:00 [debug] 68119#0: *3 write new buf t:1 f:0 0000600000020AC0, pos 0000600000020AC0, size: 24 file: 0, size: 0
+2023/08/02 14:50:00 [debug] 68119#0: *3 stream write filter: l:0 f:1 s:24
+2023/08/02 14:50:00 [debug] 68119#0: *3 posix_memalign: 0000600000034200:256 @16
+2023/08/02 14:50:00 [debug] 68119#0: *3 malloc: 00007FE2C1019C00:16384
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL buf copy: 24
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_write: 24 connection:00007FE2BE8171D0
+2023/08/02 14:50:00 [debug] 68119#0: *3 stream write filter 0000000000000000
+2023/08/02 14:50:00 [debug] 68119#0: *3 event timer add: 5: 50000:1054273060
+2023/08/02 14:50:00 [debug] 68119#0: *3 delete posted event 00007FE2BE8510D0
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_read: -1 connection:00007FE2BE8171D0
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_get_error: 2
+2023/08/02 14:50:00 [debug] 68119#0: *3 event timer: 5, old: 1054273060, new: 1054273060
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_read: 24 connection:00007FE2BE8171D0
+2023/08/02 14:50:00 [debug] 68119#0: *3 write new buf t:1 f:0 0000600000020AC0, pos 00007FE2BE8C5000, size: 24 file: 0, size: 0
+2023/08/02 14:50:00 [debug] 68119#0: *3 stream write filter: l:0 f:1 s:24
+2023/08/02 14:50:00 [debug] 68119#0: *3 ====sendmsg: 24 of 24 fd:5 connection:00007FE2BE8170E8
+2023/08/02 14:50:00 [debug] 68119#0: *3 stream write filter 0000000000000000
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_read: -1 connection:00007FE2BE8171D0
+2023/08/02 14:50:00 [debug] 68119#0: *3 SSL_get_error: 2
+2023/08/02 14:50:00 [debug] 68119#0: *3 event timer: 5, old: 1054273060, new: 1054273065
+2023/08/02 14:50:50 [debug] 68119#0: *3 SSL_read: 0 connection:00007FE2BE8171D0
+2023/08/02 14:50:50 [debug] 68119#0: *3 SSL_get_error: 6
+2023/08/02 14:50:50 [debug] 68119#0: *3 peer shutdown SSL cleanly
+2023/08/02 14:50:50 [debug] 68119#0: *3 write new buf t:0 f:0 0000600000020AC0, pos 00007FE2BE8C5000, size: 0 file: 0, size: 0
+2023/08/02 14:50:50 [debug] 68119#0: *3 stream write filter: l:1 f:1 s:0
+2023/08/02 14:50:50 [debug] 68119#0: *3 ====sendmsg: 0 of 0 fd:5 connection:00007FE2BE8170E8
+2023/08/02 14:50:50 [debug] 68119#0: *3 stream write filter 0000000000000000
+2023/08/02 14:50:50 [debug] 68119#0: *3 event timer del: 5: 1054273060
+2023/08/02 14:50:50 [debug] 68119#0: *3 event timer add: 5: 50000:1054323059
+2023/08/02 14:51:05 [debug] 68119#0: recvmsg on 0.0.0.0:25156, ready: 24
+2023/08/02 14:51:05 [debug] 68119#0: recvmsg() data:24 fd:5
+2023/08/02 14:51:05 [debug] 68119#0: *3 recvmsg: fd:5 n:24 connection:00007FE2BE8170E8
+2023/08/02 14:51:05 [debug] 68119#0: *3 write new buf t:1 f:0 0000600000020AC0, pos 00007FE2BE8A5000, size: 24 file: 0, size: 0
+2023/08/02 14:51:05 [debug] 68119#0: *3 stream write filter: l:0 f:1 s:24
+2023/08/02 14:51:05 [debug] 68119#0: *3 SSL buf copy: 24
+2023/08/02 14:51:05 [debug] 68119#0: *3 SSL_write: 24 connection:00007FE2BE8171D0
+2023/08/02 14:51:05 [debug] 68119#0: *3 stream write filter 0000000000000000
+2023/08/02 14:51:05 [debug] 68119#0: *3 event timer del: 5: 1054323059
+2023/08/02 14:51:05 [debug] 68119#0: *3 event timer add: 5: 50000:1054338574
+2023/08/02 14:51:55 [debug] 68119#0: *3 event timer del: 5: 1054338574
+2023/08/02 14:51:55 [info] 68119#0: *3 udp timed out, packets from/to client:2/2, bytes from/to client:48/48, bytes from/to upstream:24/48
+2023/08/02 14:51:55 [debug] 68119#0: *3 finalize stream proxy: 200
+2023/08/02 14:51:55 [debug] 68119#0: *3 free rr peer 1 0
+2023/08/02 14:51:55 [debug] 68119#0: *3 close stream proxy upstream connection: 6
+2023/08/02 14:51:55 [debug] 68119#0: *3 SSL_shutdown: 1
+2023/08/02 14:51:55 [debug] 68119#0: *3 ngx_kqueue_del_event event: -1 fd:6 fl:8000
+2023/08/02 14:51:55 [debug] 68119#0: *3 reusable connection: 0
+2023/08/02 14:51:55 [debug] 68119#0: *3 finalize stream session: 200
+2023/08/02 14:51:55 [debug] 68119#0: *3 stream log handler
+2023/08/02 14:51:55 [debug] 68119#0: *3 close stream connection: 5
+2023/08/02 14:51:55 [debug] 68119#0: *3 reusable connection: 0
+2023/08/02 14:51:55 [debug] 68119#0: *3 run cleanup: 0000600000020AE8
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 00007FE2C1019C00
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 00007FE2BE8C5000
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 00007FE2BE8A5000
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 00007FE2BE885000
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 00007FE2BED04080
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 0000600000020A00, unused: 0
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 0000600000020900, unused: 8
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 0000600000020800, unused: 0
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 0000600000034000, unused: 8
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 0000600000034100, unused: 0
+2023/08/02 14:51:55 [debug] 68119#0: *3 free: 0000600000034200, unused: 128
+2023/08/02 15:46:49 [notice] 68119#0: signal 2 (SIGINT) received from 16005, exiting
+2023/08/02 15:46:49 [notice] 68119#0: exit
+2023/08/02 15:46:49 [debug] 68119#0: ngx_kqueue_del_event event: -1 fd:5 fl:8000

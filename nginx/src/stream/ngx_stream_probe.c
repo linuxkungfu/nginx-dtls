@@ -810,6 +810,7 @@ static ngx_int_t ngx_reply_probe(ngx_connection_t *c, void* data, size_t data_le
 static ngx_int_t ngx_process_udp_probe(ngx_connection_t *c, u_char* p, size_t len) 
 {
   char* username = NULL;
+  ngx_int_t ret = NGX_ERROR;
   if (ngx_memcmp(prefix_probe_1, (const char *)p, prefix_len) != 0 && ngx_memcmp(prefix_probe_2, (const char *)p, prefix_len) != 0) {
     return NGX_DONE;
   }
@@ -817,14 +818,21 @@ static ngx_int_t ngx_process_udp_probe(ngx_connection_t *c, u_char* p, size_t le
   if (username == NULL) {
     return NGX_DONE;
   }
-  *(p + prefix_len) = 0xFF;
+  if (*(p + prefix_len) <= 1) {
+    *(p + prefix_len) = 0;
+    ret = NGX_OK;
+  } else {
+    *(p + prefix_len) = *(p + prefix_len) - 1;
+    ret = NGX_DONE;
+  }
+  // *(p + prefix_len) = 0xFF;
   *(p + prefix_len + 1) = *(p + prefix_len + 1) + 1;
   ngx_memcpy(username, p + prefix_len + 2, username_len);
   username[username_len] = 0x00;
   ngx_reply_probe(c, p, len);
   ngx_log_error(NGX_LOG_INFO, c->log, 0, "[probe][%s]process udp packet len:%d", username, len);
   ngx_pfree(c->pool, username);
-  return NGX_OK;
+  return ret;
 }
 static ngx_int_t ngx_process_rtp_probe(ngx_connection_t *c, u_char* p, size_t len) 
 {

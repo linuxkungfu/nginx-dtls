@@ -314,8 +314,8 @@ eintr:
 
     n = sendmsg(c->fd, &msg, 0);
 
-    ngx_log_debug4(NGX_LOG_DEBUG_EVENT, c->log, 0,
-                   "====sendmsg: %z of %uz fd:%d connection:%p", n, vec->size, c->fd, c);
+    // ngx_log_debug4(NGX_LOG_DEBUG_EVENT, c->log, 0,
+    //                "====sendmsg: %z of %uz fd:%d connection:%p", n, vec->size, c->fd, c);
 
     if (n == -1) {
         err = ngx_errno;

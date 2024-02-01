@@ -143,14 +143,14 @@ ngx_stream_core_run_phases(ngx_stream_session_t *s)
     ngx_int_t                     rc;
     ngx_stream_phase_handler_t   *ph;
     ngx_stream_core_main_conf_t  *cmcf;
-    int i;
+    // int i;
     // ngx_log_debug(NGX_LOG_DEBUG_STREAM, s->connection->log, 0, "ngx_stream_core_run_phases++++");
     cmcf = ngx_stream_get_module_main_conf(s, ngx_stream_core_module);
 
     ph = cmcf->phase_engine.handlers;
-    i = 0;
+    // i = 0;
     while (ph[s->phase_handler].checker) {
-        i++;
+        // i++;
         // ngx_log_debug1(NGX_LOG_DEBUG_STREAM, s->connection->log, 0, "ngx_stream_core_run_phases++++:%d", i);
         rc = ph[s->phase_handler].checker(s, &ph[s->phase_handler]);
 

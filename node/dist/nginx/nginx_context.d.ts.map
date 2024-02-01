@@ -1,0 +1,1 @@
+{"version":3,"file":"nginx_context.d.ts","sourceRoot":"","sources":["../../src/nginx/nginx_context.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,MAAM,gBAAgB,CAAC;AACzC,qBAAa,YAAY;;;IAKvB,IAAI,WAAW,IAAI,WAAW,GAAG,GAAG,CAEnC;IACD,IAAI,WAAW,CAAC,WAAW,EAAE,WAAW,EAEvC;CACF;AAED,eAAO,MAAM,YAAY,cAAqB,CAAC"}
